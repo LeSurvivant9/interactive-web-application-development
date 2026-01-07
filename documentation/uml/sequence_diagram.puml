@@ -1,0 +1,137 @@
+@startuml
+' --- Configuration du style ---
+autonumber
+skinparam responseMessageBelowArrow true
+skinparam maxMessageSize 200
+skinparam boxPadding 10
+skinparam participantPadding 10
+
+actor "Utilisateur" as User
+participant "Frontend\n(Next.js)" as Front
+
+box "Backend API (NestJS)" #LightBlue
+    participant "GraphQL Engine" as API
+    participant "Redis client\n(Subscriber)" as APIRedis
+end box
+
+box "Worker Service" #LightPink
+    participant "Redis client\n(Publisher)" as WorkRedis
+    participant "Job Processor" as Worker
+end box
+
+box "Infrastructure" #E0E0E0
+    participant "Redis Server\n(Queue & Broker)" as Redis
+    database "PostgreSQL" as DB
+end box
+
+participant "TVDB API" as TVDB
+
+' --- Début du scénario ---
+== Phase 1 : Mutation initiale (Handshake) ==
+
+User -> Front : Clique "Ajouter à la collection"
+Front -> API : Mutation addMedia(tvdbId)
+
+activate API
+    API -> DB : SELECT * FROM media WHERE tvdb_id = ?
+
+    alt #LightGreen Cas 1 : Média déjà en cache
+        DB --> API : Media (Status: READY)
+        API -> DB : INSERT INTO user_media ...
+        API --> Front : Succès (MediaID)
+
+    else #Pink Cas 2 : Média à récupérer (Coquille Vide)
+        DB --> API : null
+
+        ' Création de la coquille vide
+        API -> DB : INSERT INTO media (status='PROCESSING') RETURNING id
+        DB --> API : ID (ex: 42)
+        API -> DB : INSERT INTO user_media (media_id=42)
+
+        ' Délégation au worker (Via Redis Queue)
+        API -> Redis : LPUSH "jobs" {"type":"FETCH", "id":42}
+
+        API --> Front : Succès (MediaID=42, status='PROCESSING')
+    end
+deactivate API
+
+Front -> User : Redirection vers /series/42
+User -> Front : Voit les Skeletons (Chargement...)
+
+== Phase 2 : Canal temps réel (Subscription) ==
+
+' Le front écoute les changements
+Front -> API : Subscription onMediaUpdated(id: 42)
+activate API
+    note right of Front
+        WebSocket ouvert.
+        Le client attend.
+    end note
+
+    ' L'API s'abonne au canal Redis correspondant
+    API -> APIRedis : Subscribe("MEDIA_UPDATED")
+    activate APIRedis
+    APIRedis -> Redis : SUBSCRIBE "MEDIA_UPDATED"
+deactivate API
+
+== Phase 3 : Traitement asynchrone ==
+
+activate Worker
+    ' Le Worker récupère le job
+    Worker -> Redis : BRPOP "jobs"
+    Redis --> Worker : Job {"id": 42}
+
+    ' Récupération externe
+    Worker -> TVDB : GET /series/42 (Infos & Épisodes)
+    TVDB --> Worker : Données JSON
+
+    ' Transaction SQL Atomique
+    Worker -> DB : BEGIN TRANSACTION
+    Worker -> DB : UPDATE media SET status='READY'...
+    Worker -> DB : INSERT INTO episodes ...
+
+    alt #LightGreen Succès
+        Worker -> DB : COMMIT
+
+        ' NOTIFICATION via PubSub (Le détail crucial)
+        note right of Worker
+            Le Worker a fini. Il publie l'événement
+            via son client Redis interne.
+        end note
+
+        Worker -> WorkRedis : Publish("MEDIA_UPDATED", {id: 42, status: 'READY'})
+        activate WorkRedis
+        WorkRedis -> Redis : PUBLISH "MEDIA_UPDATED" payload
+        deactivate WorkRedis
+
+        ' Diffusion du message par Redis
+        Redis -> APIRedis : Message reçu !
+        activate API
+        APIRedis -> API : Trigger Event (AsyncIterator)
+
+        ' L'API GraphQL pousse au Frontend
+        API -> Front : WebSocket: { mediaUpdated: { status: 'READY' } }
+        deactivate API
+
+        ' Nettoyage Queue
+        Worker -> Redis : ACK Job
+    else #Red Erreur
+        Worker -> DB : ROLLBACK
+        Worker -> WorkRedis : Publish("MEDIA_UPDATED", {id: 42, status: 'ERROR'})
+        activate WorkRedis
+        WorkRedis -> Redis : PUBLISH "MEDIA_UPDATED" payload
+        deactivate WorkRedis
+
+        Redis -> APIRedis : Message reçu (Error)
+        activate API
+        APIRedis -> API : Trigger Event
+        API -> Front : WebSocket: { mediaUpdated: { status: 'ERROR' } }
+        deactivate API
+    end
+deactivate Worker
+
+== Phase 4 : Mise à jour UI ==
+
+Front -> User : Remplace les Skeletons par la liste des épisodes
+
+@enduml

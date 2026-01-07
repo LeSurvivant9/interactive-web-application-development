@@ -1,0 +1,11 @@
+#!/bin/sh
+
+BUN_BIN="/home/linuxbrew/.linuxbrew/bin/bun"
+
+if [ ! -x "$BUN_BIN" ]; then
+  echo "❌ Erreur Husky : Impossible de trouver bun ici : $BUN_BIN"
+  echo "💡 Vérifie ton installation Linuxbrew."
+  exit 1
+fi
+
+"$BUN_BIN" run lint-staged

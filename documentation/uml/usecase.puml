@@ -1,0 +1,70 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Visiteur" as Guest
+actor "Utilisateur" as User
+actor "Administrateur" as Admin
+actor "Système (Cron)" as Cron
+
+' Héritage : Un Admin est un User, un User est un Visiteur (authentifié)
+Guest <|-- User
+User <|-- Admin
+
+package "Sécurité & Compte (RGPD)" {
+    usecase "S'inscrire / Se connecter" as UC_Auth
+    usecase "Récupérer mot de passe" as UC_ForgotPwd
+    usecase "Gérer son profil" as UC_Profile
+    usecase "Supprimer son compte" as UC_DeleteAcc
+    usecase "Exporter ses données" as UC_Export
+
+    ' Extensions du profil
+    UC_Profile <.. UC_DeleteAcc : <<extend>>
+    UC_Profile <.. UC_Export : <<extend>>
+    UC_Auth <.. UC_ForgotPwd : <<extend>>
+}
+
+package "Gestion collection" {
+    usecase "Rechercher (API TVDB)" as UC_Search
+    usecase "Ajouter à la collection" as UC_Add
+    usecase "Gérer un média\n(Archiver / Retirer)" as UC_ManageMedia
+    usecase "Noter / Commenter" as UC_Rate
+    usecase "Signaler un commentaire" as UC_Report
+
+    ' Règles métier
+    UC_Add ..> UC_Search : <<include>>
+    UC_Rate ..> UC_Add : <<include>> \n(Constraint: doit être dans la collection)
+    UC_ManageMedia ..> UC_Add : <<include>>
+}
+
+package "Listes personnalisées" {
+    usecase "CRUD Listes\n(Créer, Renommer, Supprimer)" as UC_Lists
+}
+
+package "Administration" {
+    usecase "Supprimer un commentaire" as UC_Mod
+    usecase "Voir Dashboard" as UC_Dash
+    usecase "Mettre à jour les métadonnées" as UC_Sync
+}
+
+' Relations Visiteur
+Guest --> UC_Auth
+
+' Relations User
+User --> UC_Profile
+User --> UC_Search
+User --> UC_Add
+User --> UC_ManageMedia
+User --> UC_Rate
+User --> UC_Report
+User --> UC_Lists
+
+' Relations Admin
+Admin --> UC_Mod
+Admin --> UC_Dash
+
+' Relation Système
+Cron --> UC_Sync
+
+@enduml

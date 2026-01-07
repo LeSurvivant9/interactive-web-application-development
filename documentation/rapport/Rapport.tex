@@ -1,0 +1,228 @@
+%! Author = ls
+%! Date = 07/01/2026
+
+% Preamble
+\documentclass[10pt,a4paper]{article}
+
+% --- Polices & Encodage ---
+\usepackage{mathptmx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% --- Packages Manquants (Ajoutés) ---
+\usepackage{enumitem}  % Pour \setlist
+\usepackage{csquotes}  % Pour \DeclareQuoteStyle et \MakeOuterQuote
+\usepackage{setspace}  % Pour \setstretch
+
+% --- Mise en page & Tableaux ---
+% Note : J'ai réduit bottom à 2.5cm car 5cm créait un "Overfull \vbox" (page trop courte)
+\usepackage[top=1.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{titlesec}
+
+% --- Définition des couleurs ---
+\definecolor{headergray}{gray}{0.9}
+\definecolor{winnergreen}{rgb}{0.85, 1, 0.85}
+\definecolor{softred}{rgb}{1, 0.9, 0.9}
+
+% --- Configuration ---
+\setlist[itemize]{label=\textbullet}
+
+\DeclareQuoteStyle{french}{\textquotedblleft}{\textquotedblright}{\textquoteleft}{\textquoteright}
+\MakeOuterQuote{"}
+
+\hyphenpenalty=500
+\exhyphenpenalty=500
+\emergencystretch=1.5em
+\clubpenalty=10000
+\widowpenalty=10000
+\brokenpenalty=10000
+
+\renewcommand{\thesection}{\Roman{section}}
+
+\setstretch{1.1}
+\setlength{\parskip}{1.0\baselineskip}
+\setlength{\intextsep}{12pt}
+\setlength{\abovecaptionskip}{10pt}
+\setlength{\belowcaptionskip}{-10pt}
+
+\titleformat{\section}{\normalfont\fontsize{16}{19}\selectfont\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\fontsize{14}{17}\selectfont\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\fontsize{12}{15}\selectfont\bfseries}{\thesubsubsection}{1em}{}
+
+% Correction de la syntaxe titlespacing
+\titlespacing*{\section}{0pt}{0pt}{-1em}
+\titlespacing*{\subsection}{0pt}{0pt}{-10pt}
+
+\begin{document}
+
+    \section*{Justification du choix technologique}
+
+    Le choix de l'architecture backend est une décision qui impacte non seulement la performance de l'application, mais aussi sa maintenabilité et sa sécurité sur le long terme.
+    Dans le cadre de ce projet de gestion de collection multimédia, j'ai évalué quatre technologies majeures du marché : NestJS, Python FastAPI, Java Spring Boot et PHP Symfony.
+
+    L'analyse comparative ci-dessous repose sur une matrice de décision pondérée (Weighted Decision Matrix).
+    Les critères ont été sélectionnés en fonction des contraintes spécifiques du projet : une architecture micro-services asynchrone, une API GraphQL, une interface frontend en React/Next.js, et une exigence forte en termes de rigueur de développement (typage, auditabilité) propre à une démarche d'ingénierie et de cybersécurité.
+
+
+    \section*{Détail de l'évaluation par critère}
+
+    \subsection*{1. Structure \& rigueur (Architecture)}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} Impose une architecture modulaire stricte (inspirée d'Angular) avec injection de dépendances native, contrôleurs et services séparés. Idéal pour prévenir la dette technique sur le long terme.
+        \item \textbf{Spring Boot (5/5) :} La référence industrielle pour l'architecture "propre".
+        Impose des patterns stricts qui garantissent la maintenabilité, au prix d'une verbosité importante.
+        \item \textbf{Symfony (4/5) :} Excellent respect du pattern MVC et injection de dépendances robuste, mais offre légèrement plus de flexibilité (et donc de risque) que Nest ou Spring.
+        \item \textbf{FastAPI (3/5) :} Framework "micro".
+        Il n'impose aucune architecture par défaut.
+        Si cela permet de démarrer vite, le risque de code désorganisé ("spaghetti") est élevé sans une discipline d'expert.
+    \end{itemize}
+
+    \subsection*{2. Sûreté du typage (Sécurité)}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} Construit entièrement sur TypeScript.
+        Le typage est vérifié à la compilation, éliminant une classe entière de bugs avant même l'exécution.
+        \item \textbf{Spring Boot (5/5) :} Java est un langage au typage statique fort et strict.
+        La robustesse est maximale, les erreurs de types sont impossibles au runtime.
+        \item \textbf{Symfony (3/5) :} PHP 8 a beaucoup progressé sur le typage, mais reste un langage permissif à la base.
+        Le typage strict doit être activé volontairement fichier par fichier.
+        \item \textbf{FastAPI (2/5) :} Python utilise des "Type Hints" qui sont ignorés à l'exécution.
+        C'est une aide au développement, pas une garantie de sécurité au runtime.
+    \end{itemize}
+
+    \subsection*{3. Synergie frontend (Next.js)}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} L'avantage décisif.
+        Utilise le même langage (TypeScript) que le frontend.
+        Permet de partager les interfaces (DTO) et les énumérations directement via un monorepo, garantissant une cohérence parfaite des données.
+        \item \textbf{FastAPI (1/5) :} Rupture technologique.
+        Nécessite de maintenir deux modèles de données (pydantic côté Python, interfaces côté TS) ou d'utiliser des générateurs de code complexes.
+        \item \textbf{Spring Boot (1/5) :} Rupture technologique (Java vs JS).
+        \item \textbf{Symfony (1/5) :} Rupture technologique (PHP vs JS).
+    \end{itemize}
+
+    \subsection*{4. Support GraphQL \& WebSocket}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} Approche "Code-First" native excellente.
+        Les décorateurs TS génèrent le schéma GraphQL automatiquement.
+        Gestion des WebSockets (Subscriptions) très performante grâce à l'architecture événementielle de Node.js.
+        \item \textbf{Spring Boot (4/5) :} "Spring for GraphQL" est très robuste, mais la configuration est lourde et la gestion des connexions WebSocket persistantes consomme beaucoup de threads (et de mémoire).
+        \item \textbf{FastAPI (3/5) :} La librairie Strawberry est moderne et agréable, mais l'écosystème GraphQL Python est beaucoup moins mature et vaste que celui de JavaScript.
+        \item \textbf{Symfony (3/5) :} API Platform est excellent pour REST, mais son support GraphQL est moins flexible pour des cas complexes (Subscriptions personnalisées) que l'écosystème JS.
+    \end{itemize}
+
+    \subsection*{5. Performance asynchrone (I/O)}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} Node.js est conçu autour d'une boucle d'événement non bloquante.
+        Parfait pour gérer des milliers de connexions simultanées (cas typique des Subscriptions GraphQL) avec peu de ressources.
+        \item \textbf{FastAPI (4/5) :} Utilise `async/await` natif de Python (ASGI). Très performant, mais certaines librairies Python tierces sont encore bloquantes, ce qui peut paralyser l'API.
+        \item \textbf{Spring Boot (3/5) :} Modèle classique "un thread par requête".
+        Robuste mais gourmand en mémoire.
+        Le mode réactif (WebFlux) existe mais complexifie énormément le développement.
+        \item \textbf{Symfony (2/5) :} PHP est synchrone par nature.
+        Gérer de l'asynchrone réel (WebSockets) demande des outils tiers complexes (Swoole, ReactPHP) ou des serveurs d'application spécifiques (FrankenPHP).
+    \end{itemize}
+
+    \subsection*{6. Efficacité ressources (Docker)}
+    \begin{itemize}
+        \item \textbf{NestJS (4/5) :} Les images Docker (Alpine Linux) sont légères (<100Mo) et le démarrage est quasi instantané.
+        Faible empreinte mémoire (~50Mo RAM).
+        \item \textbf{FastAPI (4/5) :} Similaire à Node.js.
+        Images Python "Slim" très légères et démarrage rapide.
+        \item \textbf{Symfony (3/5) :} Nécessite souvent deux conteneurs (PHP-FPM + Nginx/Apache) ou une image plus lourde.
+        Consommation mémoire modérée.
+        \item \textbf{Spring Boot (2/5) :} La JVM (Java Virtual Machine) est lourde.
+        Démarrage plus lent et consommation mémoire de base élevée (>300Mo), ce qui coûte cher en hébergement cloud.
+    \end{itemize}
+
+% Début du tableau
+    \begin{table}[h]
+        \centering
+        \footnotesize % Réduction de la police pour faire tenir les 4 technos
+        \renewcommand{\arraystretch}{1.4} % Aère le tableau
+        \setlength{\tabcolsep}{9pt} % Réduit l'espace entre les colonnes
+
+        \vspace{1em}
+        \caption{Matrice de décision pondérée pour le choix du backend}
+        \label{tab:choix_backend}
+
+        \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+            \hline
+            \rowcolor{headergray}
+            \textbf{Critères de sélection} & \textbf{Poids} & \multicolumn{2}{c|}{\textbf{NestJS}} & \multicolumn{2}{c|}{\textbf{FastAPI}} & \multicolumn{2}{c|}{\textbf{Spring Boot}} & \multicolumn{2}{c|}{\textbf{Symfony}} \\
+            \rowcolor{headergray}
+            & (1-5) & Note & Score & Note & Score & Note & Score & Note & Score \\
+            \hline
+
+            % Critère 1
+            Structure \& rigueur (Architecture) & 5 &
+            5 & 25 & % Nest
+            3 & 15 & % Fast
+            5 & 25 & % Spring
+            4 & 20 \\ % Symfony
+            \hline
+
+            % Critère 2
+            Sûreté du typage (Sécurité) & 4 &
+            5 & 20 & % Nest (TS)
+            2 & 8 & % Fast (Hints)
+            5 & 20 & % Spring (Java)
+            3 & 12 \\ % Symfony (PHP8)
+            \hline
+
+            % Critère 3 - Le point clé pour Next.js
+            Synergie frontend (Partage DTO) & 5 &
+            5 & 25 & % Nest (Idem Front)
+            1 & 5 & % Fast
+            1 & 5 & % Spring
+            1 & 5 \\ % Symfony
+            \hline
+
+            % Critère 4
+            Support GraphQL / WebSocket & 4 &
+            5 & 20 & % Nest
+            3 & 12 & % Fast
+            4 & 16 & % Spring
+            3 & 12 \\ % Symfony
+            \hline
+
+            % Critère 5
+            Performance Asynchrone (I/O) & 3 &
+            5 & 15 & % Nest
+            4 & 12 & % Fast
+            3 & 9 & % Spring
+            2 & 6 \\ % Symfony
+            \hline
+
+            % Critère 6
+            Efficacité Ressources (Docker) & 2 &
+            4 & 8 & % Nest
+            4 & 8 & % Fast
+            2 & 4 & % Spring
+            3 & 6 \\ % Symfony
+            \hline
+
+            \hline
+            \rowcolor{black}
+            \multicolumn{10}{|c|}{} \\[-2ex] % Ligne de séparation noire
+
+            \rowcolor{headergray}
+            \textbf{SCORE TOTAL} & \textbf{23} &
+            \multicolumn{2}{c|}{\cellcolor{winnergreen}\textbf{113}} &
+            \multicolumn{2}{c|}{\textbf{60}} &
+            \multicolumn{2}{c|}{\textbf{79}} &
+            \multicolumn{2}{c|}{\textbf{61}} \\
+            \hline
+        \end{tabular}
+
+        \raggedright \center \textit{\scriptsize Légende : Note (1-5), Score (Note x Poids). NestJS (Node) vs FastAPI (Python) vs Spring Boot (Java) vs Symfony (PHP).}
+    \end{table}
+
+    \textbf{Analyse des résultats :}
+    Bien que \textbf{Spring Boot} offre une excellente structure, sa lourdeur et l'absence de partage de code avec le frontend le pénalisent pour ce projet.
+    \textbf{NestJS} arrive largement en tête (score : 113) grâce à sa capacité unique à partager les interfaces de données (DTOs) avec le Frontend Next.js, tout en offrant une architecture modulaire stricte comparable à celle de Java, idéale pour maintenir un haut niveau de sécurité.
+
+\end{document}

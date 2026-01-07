@@ -1,0 +1,119 @@
+@startgantt
+Project starts 2026-01-07
+printscale daily zoom 10
+' --- Configuration du Style ---
+<style>
+ganttDiagram {
+  task {
+    FontName Helvetica
+    FontSize 9
+    Padding 4
+    RoundCorner 5
+  }
+  note {
+    FontName Helvetica
+    FontSize 8
+  }
+  arrow {
+    LineColor Black
+  }
+}
+</style>
+
+' --- Définition des Couleurs (Variables stables) ---
+!$COLOR_BACK = "LightBlue"
+!$COLOR_FRONT = "LightPink"
+!$COLOR_OPS = "LightGray"
+!$COLOR_DOC = "LightYellow"
+
+' --- SPRINT 1 : WALKING SKELETON (Mercredi 07/01) ---
+-- **SPRINT 1 : INFRASTRUCTURE (07/01)** --
+
+[**Init monorepo & Git**] as [Init] lasts 1 days
+[Init] is colored in $COLOR_OPS
+[Init] starts 2026-01-07
+
+[**Docker stack**] as [Docker] lasts 1 days
+[Docker] is colored in $COLOR_OPS
+note bottom
+  Postgres, Redis,
+  NestJS, NextJS
+  tournent ensemble
+end note
+[Docker] starts 2026-01-07
+
+[**Back: Structure NestJS**] as [NestInit] lasts 1 days
+[NestInit] is colored in $COLOR_BACK
+[NestInit] starts 2026-01-07
+
+[**Front: Install Shadcn/Next**] as [NextInit] lasts 1 days
+[NextInit] is colored in $COLOR_FRONT
+[NextInit] starts 2026-01-07
+
+[**Jalon: Skeleton Fonctionnel**] as [M1] happens at [Docker]'s end
+
+' --- SPRINT 2 : CORE FEATURES (Inter-session 08/01 - 19/01) ---
+-- **SPRINT 2 : BACKEND & LOGIQUE (Autonomie)** --
+
+[**Auth (JWT & Guards)**] as [Auth] lasts 3 days
+[Auth] is colored in $COLOR_BACK
+[Auth] starts 2026-01-08
+
+[**Worker Redis & TVDB**] as [Worker] lasts 4 days
+[Worker] is colored in $COLOR_BACK
+note bottom
+  Queue + Job processor.
+end note
+[Worker] starts at [Auth]'s end
+
+[**GraphQL Resolvers (CRUD)**] as [GQL] lasts 3 days
+[GQL] is colored in $COLOR_BACK
+[GQL] starts at [Worker]'s end
+
+[**Mise à jour diagrammes**] as [Doc1] lasts 2 days
+[Doc1] is colored in $COLOR_DOC
+[Doc1] starts at [Worker]'s start
+
+[**Jalon: API Prête**] as [M2] happens at 2026-01-19
+
+' --- SPRINT 3 : INTEGRATION & UI (Le Rush 20/01 - 22/01) ---
+-- **SPRINT 3 : UI & FINALISATION (20/01 - 22/01)** --
+
+[**Intégration Apollo Client**] as [Apollo] lasts 1 days
+[Apollo] is colored in $COLOR_FRONT
+[Apollo] starts 2026-01-20
+
+[**Pages: Auth & Profil**] as [PageAuth] lasts 1 days
+[PageAuth] is colored in $COLOR_FRONT
+[PageAuth] starts 2026-01-20
+
+[**Pages: Collection & Recherche**] as [PageColl] lasts 1 days
+[PageColl] is colored in $COLOR_FRONT
+note bottom
+  Gros travail le 21/01
+  (Créneau 9h30-17h)
+end note
+[PageColl] starts 2026-01-21
+
+[**WebSocket (Sub) Integration**] as [WSS] lasts 1 days
+[WSS] is colored in $COLOR_FRONT
+[WSS] starts 2026-01-21
+
+[**Polish UI & Fix Bugs**] as [Fix] lasts 1 days
+[Fix] is colored in $COLOR_OPS
+[Fix] starts 2026-01-22
+
+[**Rapport Final & Export PDF**] as [FinalDoc] lasts 1 days
+[FinalDoc] is colored in $COLOR_DOC
+[FinalDoc] starts 2026-01-22
+
+[**DEADLINE PROJET**] as [End] happens at 2026-01-22
+
+' --- Liens logiques critiques ---
+[Docker] -> [Auth]
+[Auth] -> [Worker]
+[Worker] -> [GQL]
+[GQL] -> [Apollo]
+[Apollo] -> [PageColl]
+
+@endgantt

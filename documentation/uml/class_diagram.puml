@@ -1,0 +1,173 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "Utilisateurs & Auth" {
+    enum Role {
+        USER
+        ADMIN
+    }
+
+    class User {
+        - id: UUID
+        - username: String
+        - email: String
+        - passwordHash: String
+        - avatarUrl: String
+        - role: Role
+        - privacySettings: JSON
+        - createdAt: DateTime
+        - updatedAt: DateTime
+        + register()
+        + login()
+        + deleteAccount()
+    }
+}
+
+package "Catalogue (Données TVDB)" {
+    enum SyncStatus {
+        PROCESSING
+        READY
+        ERROR
+    }
+
+    abstract class Media {
+        - id: Long
+        - tvdbId: String
+        - title: String
+        - originalTitle: String
+        - synopsis: Text
+        - posterPath: String
+        - backdropPath: String
+        - releaseDate: Date
+        - status: String
+        - sync_status: SyncStatus
+        - genre: List<String>
+        - createdAt: DateTime
+        - updatedAt: DateTime
+    }
+
+    class Movie extends Media {
+        - duration: Integer
+        - budget: Long
+    }
+
+    class Series extends Media {
+        - totalSeasons: Integer
+        - network: String
+    }
+    note right of Series::network
+      Ex: HBO, Netflix, AMC
+    end note
+
+    class Season {
+        - id: Long
+        - number: Integer
+        - episodeCount: Integer
+        - posterPath: String
+        - airDate: Date
+    }
+
+    class Episode {
+        - id: Long
+        - tvdbId: String
+        - number: Integer
+        - absoluteNumber: Integer
+        - title: String
+        - overview: Text
+        - runtime: Integer
+        - airDate: Date
+        - imagePath: String
+    }
+}
+
+package "Bibliothèque Utilisateur" {
+    enum WatchStatus {
+        PLAN_TO_WATCH
+        WATCHING
+        COMPLETED
+        ON_HOLD
+        DROPPED
+    }
+
+    class UserMedia {
+        - id: Long
+        - rating: Integer (0-5)
+        - status: WatchStatus
+        - isFavorite: Boolean
+        - rewatchCount: Integer
+        - addedAt: DateTime
+    }
+
+    class UserEpisode {
+        - id: Long
+        - userRating: Integer (0-5)
+        - watchedAt: DateTime
+    }
+    note bottom of UserEpisode : Pas de ligne = Pas vu.
+
+    class CustomList {
+        - id: Long
+        - name: String
+        - description: String
+        - isPublic: Boolean
+        - createdAt: DateTime
+        - updatedAt: DateTime
+    }
+}
+
+package "Social & Historique" {
+    class Comment {
+        - id: Long
+        - content: Text
+        - containsSpoiler: Boolean
+        - postedAt: DateTime
+        - reportCount: Integer
+    }
+
+    class WatchLog {
+        - id: Long
+        - watchedDate: DateTime
+        - platform: String
+    }
+    note bottom of WatchLog : Historique complet\n(Permet le re-watch)
+}
+
+' --- RELATIONS ---
+
+' Catalogue Structure
+Series "1" *-- "0..*" Season : contains >
+Season "1" *-- "1..*" Episode : contains >
+
+
+' User Relations
+User "1" -- "0..*" UserMedia : manages >
+User "1" -- "0..*" CustomList : owns >
+User "1" -- "0..*" Comment : authors >
+User "1" -- "0..*" WatchLog : generates >
+
+
+' Linking User to Media
+UserMedia "*" --> "1" Media : refers to >
+UserMedia "*" --> "1" User : belongs to >
+
+
+' Linking User to Episodes
+UserEpisode "*" --> "1" Episode : refers to >
+UserEpisode "*" --> "1" User : belongs to >
+
+
+' Lists (Mixed Content)
+CustomList "0..*" o-- "0..*" Media : contains >
+
+
+' Comments (Polymorphic-like behavior)
+Comment "0..*" --> "0..1" Media : on Media >
+Comment "0..*" --> "0..1" Episode : on Episode >
+
+
+' Watch History (Logs)
+WatchLog "0..*" --> "0..1" Media : watched Movie >
+WatchLog "0..*" --> "0..1" Episode : watched Episode >
+
+@enduml

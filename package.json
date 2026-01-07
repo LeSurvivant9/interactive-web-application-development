@@ -1,0 +1,40 @@
+{
+  "name": "mediatracker-monorepo",
+  "version": "0.1.0",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:back": "bun --filter backend start:dev",
+    "dev:front": "bun --filter frontend dev",
+    "dev": "bun run dev:back & bun run dev:front",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "biome check --write --no-errors-on-unmatched"
+    ],
+    "docs/uml/**/*.puml": [
+      "java -jar docs/tools/plantuml.jar -tsvg",
+      "git add"
+    ],
+    "docs/rapport/**/*.tex": [
+      "chktex -q -n1"
+    ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.11",
+    "@types/bun": "latest",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
