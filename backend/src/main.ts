@@ -22,4 +22,8 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error("Critical error during bootstrap:");
+  console.error(err);
+  process.exit(1);
+});
