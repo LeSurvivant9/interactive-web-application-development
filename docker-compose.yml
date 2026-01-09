@@ -1,0 +1,51 @@
+---
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: mediatracker_db
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:8-alpine
+    container_name: mediatracker_redis
+    ports:
+      - '6379:6379'
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: mediatracker_api
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: mediatracker_ui
+    ports:
+      - '3001:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    depends_on:
+      - backend
+volumes:
+  postgres_data:

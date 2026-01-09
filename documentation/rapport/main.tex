@@ -1,0 +1,22 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{my_model}
+
+\graphicspath{{./assets/}}
+
+\title{Titre du rapport}
+\author{Alexandre BOISFER}
+\date{\today}
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+    \newpage
+
+    \nocite{*}
+
+    \input{sections/01_introduction}
+    \input{sections/99_conclusion}
+
+    \bibliographystyle{plain}
+    \bibliography{references}
+\end{document}

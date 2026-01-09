@@ -1,11 +1,24 @@
 #!/bin/sh
 
-BUN_BIN="/home/linuxbrew/.linuxbrew/bin/bun"
-
-if [ ! -x "$BUN_BIN" ]; then
-  echo "❌ Erreur Husky : Impossible de trouver bun ici : $BUN_BIN"
-  echo "💡 Vérifie ton installation Linuxbrew."
-  exit 1
+if command -v bun >/dev/null 2>&1; then
+  bun run lint-staged
+  exit 0
 fi
 
-"$BUN_BIN" run lint-staged
+POTENTIAL_PATHS="
+/home/linuxbrew/.linuxbrew/bin/bun
+/opt/homebrew/bin/bun
+/usr/local/bin/bun
+$HOME/.bun/bin/bun
+"
+
+for BUN_PATH in $POTENTIAL_PATHS; do
+  if [ -x "$BUN_PATH" ]; then
+    "$BUN_PATH" run lint-staged
+    exit 0
+  fi
+done
+
+echo "❌ Erreur Husky : Impossible de trouver 'bun' sur ce système."
+echo "💡 Vérifie ton PATH ou ajoute le chemin dans .husky/pre-commit"
+exit 1

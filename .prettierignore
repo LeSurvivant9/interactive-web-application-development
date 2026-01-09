@@ -1,0 +1,24 @@
+# Ignorer les dépendances et builds
+node_modules
+.next
+dist
+build
+coverage
+
+# --- DOMAINE RÉSERVÉ BIOME (Prettier ne doit pas toucher) ---
+**/*.js
+**/*.mjs
+**/*.cjs
+**/*.ts
+**/*.tsx
+**/*.jsx
+**/*.json
+**/*.jsonc
+
+# --- DOMAINE RÉSERVÉ YAMLLINT (Prettier ne doit pas toucher) ---
+*.yml
+*.yaml
+
+# Ignorer les fichiers lock
+bun.lockb
+package-lock.json
