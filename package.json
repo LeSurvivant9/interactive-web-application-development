@@ -9,8 +9,8 @@
     "frontend"
   ],
   "scripts": {
-    "dev:back": "bun --filter backend start:dev",
-    "dev:front": "bun --filter frontend dev",
+    "dev:back": "bun --filter mediatracker-backend start:dev",
+    "dev:front": "bun --filter mediatracker-frontend dev",
     "dev": "bun run dev:back & bun run dev:front",
     "check": "bun run check:biome && bun run check:prettier && bun run lint:yaml",
     "check:biome": "biome check .",
@@ -43,8 +43,8 @@
     "@biomejs/biome": "^2.3.11",
     "@types/bun": "latest",
     "@types/pg": "^8.16.0",
-    "backend": "workspace:*",
     "husky": "^9.1.7",
+    "knip": "^5.80.2",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "prettier-plugin-organize-attributes": "^1.0.0"
@@ -53,9 +53,14 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@apollo/client": "^4.0.11",
+    "@apollo/server": "^5.2.0",
+    "@nestjs/apollo": "^13.2.3",
+    "@nestjs/graphql": "^13.2.3",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "dotenv": "^17.2.3",
+    "graphql": "^16.12.0",
     "prisma": "^7.2.0"
   }
 }

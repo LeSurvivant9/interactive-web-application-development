@@ -28,6 +28,11 @@
       }
     }
   },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
   "assist": {
     "actions": {
       "source": {

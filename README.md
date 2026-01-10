@@ -1,15 +1,28 @@
-# interactive-web-application-development
+# MediaTracker
 
-To install dependencies:
+## Installation des dépendances
+
+Pour installer les dépendances de l'ensemble du projet (monorepo), exécutez la commande suivante à la racine :
 
 ```bash
 bun install
 ```
 
-To run:
+### Ajouter des dépendances
 
-```bash
-bun run index.ts
-```
+- **Globalement (à la racine) :**
 
-This project was created using `bun init` in bun v1.3.5. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+  ```bash
+  bun add <package_name>
+  ```
+
+- **Spécifiquement pour le backend :**
+
+  ```bash
+  bun add <package_name> --cwd backend
+  ```
+
+- **Spécifiquement pour le frontend :**
+  ```bash
+  bun add <package_name> --cwd frontend
+  ```
