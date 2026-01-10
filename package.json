@@ -12,16 +12,20 @@
     "dev:back": "bun --filter mediatracker-backend start:dev",
     "dev:front": "bun --filter mediatracker-frontend dev",
     "dev": "bun run dev:back & bun run dev:front",
-    "check": "bun run check:biome && bun run check:prettier && bun run lint:yaml",
+    "check": "bun run check:biome && bun run check:prettier && bun run lint:yaml && bun run lint:deprecation",
     "check:biome": "biome check .",
     "check:prettier": "prettier --check \"**/*.md\"",
     "lint:yaml": "yamllint .",
+    "lint:deprecation": "eslint .",
     "format": "bun run format:biome && bun run format:prettier",
     "format:biome": "biome check --write .",
     "format:prettier": "prettier --write \"**/*.md\"",
     "prepare": "husky"
   },
   "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --max-warnings=0 --no-warn-ignored"
+    ],
     "**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
       "biome check --write --no-errors-on-unmatched"
     ],
@@ -43,11 +47,17 @@
     "@biomejs/biome": "^2.3.11",
     "@types/bun": "latest",
     "@types/pg": "^8.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-deprecation": "^3.0.0",
+    "globals": "^17.0.0",
     "husky": "^9.1.7",
     "knip": "^5.80.2",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
-    "prettier-plugin-organize-attributes": "^1.0.0"
+    "prettier-plugin-organize-attributes": "^1.0.0",
+    "typescript-eslint": "^8.52.0"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"

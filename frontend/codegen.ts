@@ -13,6 +13,9 @@ const config: CodegenConfig = {
           inputValue: false,
         },
         defaultScalarType: "unknown",
+        scalars: {
+          DateTime: "string",
+        },
         nonOptionalTypename: true,
         skipTypeNameForRoot: true,
         typesPrefix: "I",

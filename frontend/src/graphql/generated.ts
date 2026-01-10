@@ -26,7 +26,13 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
-  DateTime: { input: unknown; output: unknown };
+  DateTime: { input: string; output: string };
+};
+
+export type IAuthPayload = {
+  __typename: "AuthPayload";
+  accessToken: Scalars["String"]["output"];
+  user: IUser;
 };
 
 export type ICreateUserInput = {
@@ -35,15 +41,25 @@ export type ICreateUserInput = {
   username: Scalars["String"]["input"];
 };
 
+export type ILoginInput = {
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+};
+
 export type IMutation = {
   __typename: "Mutation";
   createUser: IUser;
+  login: IAuthPayload;
   removeUser: IUser;
   updateUser: IUser;
 };
 
 export type IMutationCreateUserArgs = {
   createUserInput: ICreateUserInput;
+};
+
+export type IMutationLoginArgs = {
+  loginInput: ILoginInput;
 };
 
 export type IMutationRemoveUserArgs = {
@@ -56,6 +72,7 @@ export type IMutationUpdateUserArgs = {
 
 export type IQuery = {
   __typename: "Query";
+  me: IUser;
   user: Maybe<IUser>;
   users: Array<IUser>;
 };
@@ -87,6 +104,19 @@ export type IUser = {
   username: Scalars["String"]["output"];
 };
 
+export type IMeQueryVariables = Exact<{ [key: string]: never }>;
+
+export type IMeQuery = {
+  me: {
+    __typename: "User";
+    id: string;
+    username: string;
+    email: string;
+    role: IRole;
+    createdAt: string;
+  };
+};
+
 export type IGetUsersQueryVariables = Exact<{ [key: string]: never }>;
 
 export type IGetUsersQuery = {
@@ -96,7 +126,7 @@ export type IGetUsersQuery = {
     username: string;
     email: string;
     role: IRole;
-    createdAt: unknown;
+    createdAt: string;
   }>;
 };
 
@@ -108,6 +138,35 @@ export type ICreateUserMutation = {
   createUser: { __typename: "User"; id: string; username: string; role: IRole };
 };
 
+export const MeDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "Me" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "me" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "username" } },
+                { kind: "Field", name: { kind: "Name", value: "email" } },
+                { kind: "Field", name: { kind: "Name", value: "role" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<IMeQuery, IMeQueryVariables>;
 export const GetUsersDocument = {
   kind: "Document",
   definitions: [
