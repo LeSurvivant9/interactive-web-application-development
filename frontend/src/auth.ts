@@ -1,6 +1,8 @@
+import { print } from "graphql";
 import NextAuth, { type User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
+import { LoginDocument } from "@/graphql/generated";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -21,27 +23,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (validatedFields.success) {
           const { email, password } = validatedFields.data;
 
-          const query = `
-            mutation Login($loginInput: LoginInput!) {
-              login(loginInput: $loginInput) {
-                accessToken
-                user {
-                  id
-                  email
-                  username
-                  role
-                }
-              }
-            }
-          `;
-
           const response = await fetch(
             process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/graphql",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                query,
+                query: print(LoginDocument),
                 variables: {
                   loginInput: { email, password },
                 },

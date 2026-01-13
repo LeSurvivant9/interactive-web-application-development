@@ -1,0 +1,52 @@
+\section{Introduction et contexte}\label{sec:introduction}
+
+Ce document présente le rapport de réalisation du projet \textbf{MediaTracker}, développé dans le cadre du module SAE \enquote{Développement d'application web interactive} (FISA S5).
+Au-delà de l'exercice académique, ce projet incarne une volonté de concevoir une solution professionnelle et pérenne répondant à une problématique quotidienne de consommation culturelle.
+
+\subsection{Cadre du projet et problématique}\label{subsec:cadre_projet}
+
+À l'ère du numérique, notre consommation de divertissement est fragmentée sur de multiples plateformes (Netflix, Steam, Spotify, Kindle).
+Il devient complexe de conserver un historique centralisé de notre vie culturelle ou de gérer simplement une liste d'envies sans basculer d'une application à l'autre.
+L'ambition de \textit{MediaTracker} est de devenir ce point de convergence unique : un véritable \enquote{compagnon médiatique}.
+
+Si la vision à long terme inclut la gestion des livres, des jeux vidéo et de la musique, cette première version (v1) se concentre spécifiquement sur l'univers audiovisuel (films et séries).
+
+\subsection{Objectifs pédagogiques et personnels}\label{subsec:objectifs}
+
+Ce projet représente un jalon important dans mon parcours d'ingénieur pour plusieurs raisons :
+\begin{itemize}
+  \item \textbf{Montée en compétences techniques :} L'objectif est de maîtriser des technologies de pointe, notamment l'implémentation complète d'une API GraphQL (découverte totale) et l'utilisation des dernières avancées de Next.js 16.
+  \item \textbf{Professionnalisation :} Passer du statut de \enquote{projet étudiant} à celui de \enquote{produit portfolio} complet, respectant les standards de l'industrie (architecture propre, typage strict, CI/CD).
+  \item \textbf{Validation des acquis :} Démontrer ma capacité à mener un projet Full-Stack complexe en autonomie, de la conception de la base de données jusqu'au déploiement.
+\end{itemize}
+
+\subsection{Périmètre fonctionnel}\label{subsec:perimetre}
+
+Pour cette première itération, les fonctionnalités ont été priorisées pour garantir une expérience utilisateur fluide et aboutie :
+\begin{itemize}
+  \item \textbf{Gestion de collection :} Recherche via l'API TVDB, ajout à la bibliothèque et suppression d'œuvres.
+  \item \textbf{Suivi de progression :} Marquage des épisodes vus et suivi global des séries.
+  \item \textbf{Fonctions sociales :} Système de notation et de commentaires pour chaque média.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includesvg[width=0.3\textwidth]{context}
+  \caption{Diagramme de contexte (niveau 0)}\label{fig:context}
+\end{figure}
+
+\subsection{Méthodologie et organisation}\label{subsec:methodologie}
+
+La gestion de ce projet en solo a nécessité une rigueur organisationnelle stricte pour tenir les délais impartis.
+J'ai adopté une approche itérative inspirée des méthodes SCRUM :
+\begin{itemize}
+  \item \textbf{Planification par sprints :} Le travail a été découpé en blocs fonctionnels distincts (infrastructure, backend core, UI integration), visibles sur le diagramme de Gantt (Figure~\ref{fig:gantt}).
+  \item \textbf{Processus de qualité :} Chaque fin de cycle inclut une phase de\enquote{Self-Review} et de refactoring, garantissant que la dette technique ne s'accumule pas.
+  \item \textbf{Convention de code :} L'application stricte des \textit{Conventional Commits} permet une traçabilité complète des évolutions et des correctifs.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includesvg[width=\textwidth, inkscapelatex=false]{gantt}
+  \caption{Planning prévisionnel et découpage en sprints}\label{fig:gantt}
+\end{figure}

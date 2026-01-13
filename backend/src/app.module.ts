@@ -22,7 +22,8 @@ import { UsersModule } from "./users/users.module";
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       sortSchema: true,
-      playground: true,
+      introspection: process.env.NODE_ENV !== "production",
+      playground: process.env.NODE_ENV !== "production",
     }),
     LoggerModule.forRoot({
       pinoHttp: {

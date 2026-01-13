@@ -1,6 +1,6 @@
 @startgantt
 Project starts 2026-01-07
-printscale daily zoom 10
+printscale daily zoom 4
 ' --- Configuration du Style ---
 <style>
 ganttDiagram {

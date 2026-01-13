@@ -9,6 +9,7 @@ import {
 import { SetContextLink } from "@apollo/client/link/context";
 import { ApolloProvider } from "@apollo/client/react";
 import { SessionProvider, useSession } from "next-auth/react";
+import { ThemeProvider } from "next-themes";
 import React, { useMemo } from "react";
 
 const httpLink = new HttpLink({
@@ -42,7 +43,9 @@ const ApolloWrapper = ({ children }: { children: React.ReactNode }) => {
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <ApolloWrapper>{children}</ApolloWrapper>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ApolloWrapper>{children}</ApolloWrapper>
+      </ThemeProvider>
     </SessionProvider>
   );
 }

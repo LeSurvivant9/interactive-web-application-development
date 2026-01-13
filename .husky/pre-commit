@@ -14,7 +14,7 @@ $HOME/.bun/bin/bun
 
 for BUN_PATH in $POTENTIAL_PATHS; do
   if [ -x "$BUN_PATH" ]; then
-    "$BUN_PATH" run lint-staged
+    "$BUN_PATH" run lint-staged --concurrent false
     exit 0
   fi
 done

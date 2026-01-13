@@ -7,3 +7,23 @@ query Me {
     createdAt
   }
 }
+
+mutation Register($input: CreateUserInput!) {
+  createUser(createUserInput: $input) {
+    id
+    email
+    username
+  }
+}
+
+mutation Login($loginInput: LoginInput!) {
+  login(loginInput: $loginInput) {
+    accessToken
+    user {
+      id
+      email
+      username
+      role
+    }
+  }
+}

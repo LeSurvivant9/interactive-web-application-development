@@ -11,7 +11,10 @@ async function bootstrap() {
     });
     app.useLogger(app.get(Logger));
     app.useGlobalPipes(new ValidationPipe());
-    app.enableCors();
+    app.enableCors({
+      origin: process.env.FRONTEND_URL,
+      credentials: true,
+    });
 
     const port = process.env.PORT ?? 3000;
     await app.listen(port, "0.0.0.0");

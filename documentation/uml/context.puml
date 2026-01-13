@@ -1,0 +1,14 @@
+@startuml
+!theme plain
+skinparam actorStyle awesome
+skinparam linetype ortho
+skinparam defaultTextAlignment center
+skinparam ranksep 70
+
+actor "Utilisateur" as User
+rectangle "MediaTracker\n(Système)" as App
+cloud "TheMovieDB / TVDB\n(Fournisseur de données)" as API
+
+User -down-> App : Gère sa collection,\nNote et commente
+App -down-> API : Récupère les métadonnées\n(Images, Synopsis, Épisodes)
+@enduml

@@ -27,7 +27,9 @@ export class UsersService {
         "code" in error &&
         error.code === "P2002"
       ) {
-        throw new ConflictException("Username ou Email déjà utilisé");
+        throw new ConflictException(
+          "Nom d'utilisateur ou adresse mail déjà utilisé",
+        );
       }
       throw error;
     }

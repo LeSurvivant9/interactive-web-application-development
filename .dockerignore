@@ -1,8 +1,8 @@
-node_modules
+**/node_modules
+**/.next
+**/dist
+**/build
 .git
-.next
-dist
-build
 .env
 .DS_Store
 Dockerfile*
@@ -16,4 +16,5 @@ Makefile
 helm-charts
 .editorconfig
 .idea
-coverage*
+**/coverage*
+*.log

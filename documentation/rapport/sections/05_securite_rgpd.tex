@@ -1,0 +1,33 @@
+\section{Sécurité et Conformité RGPD}\label{sec:securite}
+
+La sécurité des données utilisateurs est un enjeu central du projet MediaTracker.
+L'architecture a été pensée pour minimiser les vecteurs d'attaque tout en garantissant la souveraineté des données.
+
+\subsection{Stratégie d'authentification (NextAuth \& JWT)}\label{subsec:auth_strategy}
+
+L'authentification repose sur une architecture hybride.
+Le frontend (Next.js) utilise la librairie \textbf{NextAuth.js} (v5) qui agit comme une couche d'abstraction sécurisée.
+\begin{itemize}
+    \item \textbf{Credential provider :} NextAuth capture les identifiants, les valide via un schéma \textbf{Zod} (pour garantir le format email/password avant même l'envoi), et interroge l'API GraphQL via une mutation dédiée.
+    \item \textbf{Gestion de session :} Le token JWT (JSON Web Token) généré par le backend NestJS est encapsulé dans un cookie chiffré et géré automatiquement par NextAuth (\texttt{HttpOnly}, \texttt{Secure}).
+    \item \textbf{Payload :} Le JWT contient l'ID utilisateur et son rôle (\texttt{USER} ou \texttt{ADMIN}), permettant au backend de vérifier les droits sans interroger la base de données à chaque requête (stateless).
+\end{itemize}
+
+\subsection{Hachage des mots de passe}\label{subsec:hashing}
+
+Contrairement aux solutions vieillissantes comme MD5 ou SHA-256, et même préférablement à bcrypt, j'ai opté pour \textbf{argon2} (via la librairie \texttt{argon2}).
+\begin{itemize}
+    \item \textbf{Justification :} Argon2 est l'algorithme lauréat de la \enquote{Password Hashing Competition}.
+    \item Il est conçu pour résister aux attaques par force brute sur GPU (Memory-Hard Function), offrant un niveau de sécurité maximal pour les comptes utilisateurs en 2026.
+\end{itemize}
+
+\subsection{Gestion des données personnelles (RGPD)}\label{subsec:rgpd}
+
+La conformité au Règlement Général sur la Protection des Données est assurée par deux mécanismes clés :
+\begin{enumerate}
+    \item \textbf{Droit à la portabilité :} L'utilisateur peut demander l'export complet de ses données via le cas d'utilisation.
+    % TODO: Insérer ici le cas d'utilisation
+    \item Le système génère un fichier structuré au format \textbf{JSON}, lisible par une machine et facilement réutilisable.
+    \item \textbf{Droit à l'oubli (suppression) :} Actuellement, la suppression d'un compte entraîne une suppression physique définitive (\textit{Hard Delete}) de l'utilisateur et de toutes ses données liées (listes, notes, historique) grâce aux contraintes d'intégrité référentielle (\texttt{ON DELETE CASCADE}) de la base de données.
+    \textit{Perspective d'évolution :} Une approche par \enquote{Soft Delete} (marquage inactif pendant 30 jours avant purge) est envisagée pour permettre la restauration en cas d'erreur, mais n'a pas été retenue dans cette version v1 pour privilégier la minimisation des données stockées.
+\end{enumerate}

@@ -1,22 +1,37 @@
-\documentclass[a4paper,11pt]{article}
-\usepackage{my_model}
+\documentclass[a4paper, 11pt]{article}
+\usepackage{mystyle}
 
-\graphicspath{{./assets/}}
+\graphicspath{{./assets/}{./assets/diagrams}}
 
-\title{Titre du rapport}
+\title{Rapport de projet : MediaTracker}
 \author{Alexandre BOISFER}
 \date{\today}
 
 \begin{document}
-    \maketitle
-    \tableofcontents
-    \newpage
+  \hypersetup{pageanchor=false}
+  \maketitle
+  \hypersetup{pageanchor=true}
 
-    \nocite{*}
+  \tableofcontents
+  \newpage
 
-    \input{sections/01_introduction}
-    \input{sections/99_conclusion}
+  \input{sections/01_introduction}
+  \input{sections/02_analyse}
+  \input{sections/03_choix_technologiques}
+  \input{sections/04_architecture}
+  \input{sections/05_securite_rgpd}
+  \input{sections/06_realisation}
+  \input{sections/07_bilan}
+  \input{sections/99_conclusion}
 
-    \bibliographystyle{plain}
-    \bibliography{references}
+  \newpage
+  \begingroup
+  \renewcommand{\sectionbreak}{}
+  \listoffigures
+  \vspace{1cm}
+  \listoftables \endgroup
+
+  \nocite{*}
+  \bibliographystyle{plain}
+  \bibliography{references}
 \end{document}

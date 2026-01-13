@@ -1,0 +1,190 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mystyle}[2026/01/01 Style]
+
+\RequirePackage[french]{babel}
+\RequirePackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\RequirePackage{microtype}
+
+\RequirePackage{geometry}
+\geometry{a4paper, top=0.2cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=57pt, headsep=0.5cm, includehead}
+
+\RequirePackage{fancyhdr}
+\RequirePackage{lastpage}
+\RequirePackage{setspace}
+\RequirePackage{titlesec}
+\RequirePackage{titletoc}
+\RequirePackage{caption}
+
+\RequirePackage{graphicx}
+\RequirePackage{float}
+\RequirePackage[table,xcdraw]{xcolor}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{multirow}
+\RequirePackage{enumitem}
+
+\RequirePackage{tikz}
+\usetikzlibrary{shapes, positioning, arrows.meta, calc}
+
+\RequirePackage{svg}
+\svgsetup{
+    inkscapelatex=false,
+}
+
+\RequirePackage[minted]{tcolorbox}
+\tcbuselibrary{minted, skins, breakable}
+\definecolor{lightblue}{RGB}{30, 144, 255}
+\definecolor{headergray}{gray}{0.9}
+\definecolor{winnergreen}{rgb}{0.85, 1, 0.85}
+\definecolor{softred}{rgb}{1, 0.9, 0.9}
+
+\RequirePackage[autostyle=false]{csquotes}
+\DeclareQuoteStyle{french}
+{\textquotedblleft}{\textquotedblright}
+{\textquoteleft}{\textquoteright}
+\MakeOuterQuote{"}
+\providecommand{\frquote}{}
+\renewcommand{\frquote}[1]{\guillemotleft{}#1\guillemotright{}}
+
+\usemintedstyle{dracula}
+\newtcblisting{code}[2]{
+    listing engine=minted,
+    minted language=#1,
+    minted options={
+        fontsize=\small,
+        breaklines,
+        autogobble,
+        linenos,
+        numbersep=8pt
+    },
+    title=#2,
+    colback=black!90,
+    colupper=white,
+    colframe=gray!50!black,
+    listing only,
+    enhanced,
+    breakable,
+    sharp corners=southwest,
+    drop shadow,
+    fonttitle=\bfseries\ttfamily,
+    attach boxed title to top left={yshift=-2mm, xshift=2mm},
+    boxed title style={colback=purple!50!black}
+}
+
+
+\newcommand{\globaltitle}{}
+\newcommand{\globalauthor}{}
+\NewCommandCopy{\oldtitle}{\title}
+\NewCommandCopy{\oldauthor}{\author}
+\renewcommand{\title}[1]{\oldtitle{#1}\renewcommand{\globaltitle}{#1}}
+\renewcommand{\author}[1]{\oldauthor{#1}\renewcommand{\globalauthor}{#1}}
+
+\RequirePackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=lightblue,
+    pdfborder={0 0 0}
+}
+
+\setlist[itemize]{label=\textbullet}
+
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
+
+\setstretch{1.1}
+\setlength{\parskip}{0.8\baselineskip}
+\setlength{\parindent}{0pt}
+\setlength{\intextsep}{2em}
+\captionsetup{aboveskip=1em}
+\captionsetup{belowskip=-2em}
+
+\titleformat{\section}
+{\normalfont\bfseries\fontsize{16}{19}\selectfont}
+{\thesection}
+{1em}
+{}
+
+\titlespacing*{\section}{0pt}{0em}{0em}
+
+\titleformat{\subsection}
+{\normalfont\bfseries\fontsize{14}{17}\selectfont}
+{\thesubsection}
+{1em}
+{}
+
+\titlespacing*{\subsection}{1cm}{0em}{-1em}
+
+\titleformat{\subsubsection}
+{\normalfont\bfseries\fontsize{12}{14}\selectfont}
+{\thesubsubsection}
+{1em}
+{}
+
+\titlespacing*{\subsubsection}{-1cm}{0pt}{-1em}
+
+\titlecontents{section}[0em]
+{\addvspace{0pt}\bfseries}
+{\thecontentslabel\quad}
+{}
+{\titlerule*[0.5pc]{.}\contentspage}
+
+\titlecontents{subsection}[1.5em]
+{\addvspace{-1em}}
+{\thecontentslabel\quad}
+{}
+{\titlerule*[0.5pc]{.}\contentspage}
+
+\titlecontents{subsubsection}[3.8em]
+{\addvspace{-1em}}
+{\thecontentslabel\quad}
+{}
+{\titlerule*[0.5pc]{.}\contentspage}
+
+\newcommand{\sectionbreak}{\clearpage}
+
+\renewcommand{\maketitle}{
+    \begin{titlepage}
+        \thispagestyle{empty}
+        \vspace*{\fill}
+        \begin{center}
+            {\Huge \bfseries \globaltitle \par}
+      \vspace{1.5cm}
+      {\Large \globalauthor \par}
+      \vspace{1cm}
+      {\large \today \par}
+        \end{center}
+        \vspace*{\fill}
+    \end{titlepage}
+    \pagestyle{fancy}
+    \setcounter{page}{1}
+}
+
+\newcommand{\setupHeaders}{
+    \fancyhf{}
+    \fancyhead[C]{
+        \raisebox{-0.5\height}{\includegraphics[height=1.3cm]{insa-logo}}
+        \hspace{2cm}
+        \raisebox{-0.5\height}{\includegraphics[height=1.8cm]{uphf-logo}}
+        \vspace{0.2cm}
+    }
+    \fancyfoot[L]{Alexandre BOISFER}
+    \fancyfoot[C]{Page \thepage\ / \pageref{LastPage}}
+    \fancyfoot[R]{\globaltitle}
+}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\setupHeaders
+
+\fancypagestyle{plain}{
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\footrulewidth}{0.4pt}
+    \setupHeaders
+}
+
+\endinput

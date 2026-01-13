@@ -1,0 +1,118 @@
+\section{Justification des choix technologiques}\label{sec:choix_technologiques}
+
+Le choix de l'architecture est une décision qui impacte non seulement la performance de l'application, mais aussi sa maintenabilité et sa sécurité sur le long terme.
+Cette section détaille les arbitrages réalisés pour le backend, le frontend et la base de données.
+
+\subsection{Architecture backend : le choix de NestJS}\label{subsec:choix_backend}
+
+Dans le cadre de ce projet, j'ai évalué quatre technologies majeures : NestJS, Python FastAPI, Java Spring Boot et PHP Symfony.
+L'analyse repose sur une matrice de décision pondérée (Weighted Decision Matrix) basée sur les contraintes du projet : architecture micro-services, API GraphQL, et rigueur de code.
+
+\textbf{Analyse par critère}
+
+\begin{itemize}
+    \item \textbf{Structure \& rigueur :}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} Impose une architecture modulaire stricte (inspirée d'Angular) avec injection de dépendances.
+        Idéal pour prévenir la dette technique.
+        \item \textbf{Spring Boot (5/5) :} La référence industrielle, mais au prix d'une verbosité importante.
+        \item \textbf{Symfony (4/5) :} Excellent respect du MVC, mais plus permissif que Nest ou Spring.
+        \item \textbf{FastAPI (3/5) :} N'impose aucune architecture.
+        Risque élevé de code désorganisé sans expert.
+    \end{itemize}
+
+    \item \textbf{Sûreté du typage :}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} TypeScript strict vérifié à la compilation.
+        Élimine une classe entière de bugs.
+        \item \textbf{Spring Boot (5/5) :} Typage statique fort (Java).
+        Robustesse maximale.
+        \item \textbf{Symfony (3/5) :} PHP 8 a beaucoup progressé sur le typage, mais reste un langage permissif à la base.
+        Le typage strict doit être activé volontairement fichier par fichier.
+        \item \textbf{FastAPI (2/5) :} Les \enquote{Type Hints} Python sont ignorés à l'exécution.
+    \end{itemize}
+
+    \item \textbf{Synergie frontend :}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} Avantage décisif.
+        Partage des interfaces (DTO) via un monorepo (full TypeScript).
+        \item \textbf{Autres (1/5) :} Rupture technologique imposant une duplication des modèles de données.
+    \end{itemize}
+
+    \item \textbf{Performance asynchrone \& I/O :}
+    \begin{itemize}
+        \item \textbf{NestJS (5/5) :} Node.js est conçu autour d'une boucle d'événement non bloquante.
+        Parfait pour gérer des milliers de connexions simultanées (cas typique des Subscriptions GraphQL) avec peu de ressources.
+        \item \textbf{FastAPI (4/5) :} Utilise \texttt{async/await} natif de Python (ASGI).
+        Très performant, mais certaines librairies Python tierces sont encore bloquantes, ce qui peut paralyser l'API\@.
+        \item \textbf{Spring Boot (3/5) :} Modèle classique \enquote{un thread par requête}.
+        Robuste mais gourmand en mémoire.
+        Le mode réactif (WebFlux) existe mais complexifie énormément le développement.
+        \item \textbf{Symfony (2/5) :} PHP est synchrone par nature.
+        Gérer de l'asynchrone réel (WebSockets) demande des outils tiers complexes (Swoole, ReactPHP) ou des serveurs d'application spécifiques (FrankenPHP).
+    \end{itemize}
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.4}
+    \setlength{\tabcolsep}{8pt}
+
+    \caption{Matrice de décision pondérée pour le choix du backend}\label{tab:choix_backend_matrix}
+
+    \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+        \hline
+        \rowcolor{headergray} \textbf{Critères de sélection} & \textbf{Poids} & \multicolumn{2}{c|}{\textbf{NestJS}}                     & \multicolumn{2}{c|}{\textbf{FastAPI}} & \multicolumn{2}{c|}{\textbf{Spring Boot}} & \multicolumn{2}{c|}{\textbf{Symfony}} \\
+        \rowcolor{headergray}       & (1--5) & Note & Score & Note & Score & Note & Score & Note & Score \\
+        \hline
+        Structure \& rigueur        & 5      & 5    & 25    & 3    & 15    & 5    & 25    & 4    & 20    \\
+        \hline
+        Sûreté du typage            & 4      & 5    & 20    & 2    & 8     & 5    & 20    & 3    & 12    \\
+        \hline
+        Synergie frontend           & 5      & 5    & 25    & 1    & 5     & 1    & 5     & 1    & 5     \\
+        \hline
+        Support GraphQL / WebSocket & 4      & 5    & 20    & 3    & 12    & 4    & 16    & 3    & 12    \\
+        \hline
+        Performance asynchrone      & 3      & 5    & 15    & 4    & 12    & 3    & 9     & 2    & 6     \\
+        \hline
+        Efficacité ressources       & 2      & 4    & 8     & 4    & 8     & 2    & 4     & 3    & 6     \\
+        \hline
+        \hline
+        \rowcolor{black} \multicolumn{10}{|c|}{}              \\[-2ex]
+        \rowcolor{headergray} \textbf{SCORE TOTAL} & \textbf{23} & \multicolumn{2}{c|}{\cellcolor{winnergreen}\textbf{113}} & \multicolumn{2}{c|}{\textbf{60}}      & \multicolumn{2}{c|}{\textbf{79}}          & \multicolumn{2}{c|}{\textbf{61}}      \\
+        \hline
+    \end{tabular}
+    \raggedright \center \textit{\scriptsize Légende : Note (1--5), Score (Note x Poids). NestJS (Node) vs FastAPI (Python) vs Spring Boot (Java) vs Symfony (PHP).}
+\end{table}
+
+\textbf{Conclusion backend :} Bien que Spring Boot soit robuste, \textbf{NestJS} s'impose (score : 113) grâce à sa synergie totale avec le frontend et son architecture événementielle native.
+
+\subsection{Architecture frontend : ke choix de Next.js}\label{subsec:choix_frontend}
+
+Contrairement aux recommandations du cours orientant vers Vue.js, j'ai opté pour \textbf{Next.js (React)}.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.4}
+    \caption{Comparatif frontend simplifié}\label{tab:choix_frontend_simple}
+    \begin{tabularx}
+    {\textwidth}{|X|c|c|} \hline \rowcolor{headergray} \textbf{Critère} &
+        \textbf{Next.js (Retenu)} & \textbf{Vue.js (Cours)} \\ \hline \textbf{Rendu} &
+        Server Components (RSC) & SPA / Options API \\ \hline \textbf{Typage} &
+        TypeScript Natif (Strict) & Prop Types (Moins strict) \\ \hline \textbf{Écosystème
+        UI} & Shadcn/UI (Moderne) & Vuetify / Bootstrap \\ \hline
+    \end{tabularx}
+\end{table}
+
+Ce choix permet d'utiliser les \textit{React Server Components} pour optimiser le chargement initial et le SEO, tout en tirant profit de l'écosystème React (Shadcn/UI, Aceternity UI) pour l'interface.
+
+\subsection{Base de données et ORM}\label{subsec:choix_bdd}
+
+J'ai choisi le couple \textbf{PostgreSQL + Prisma} plutôt que MSSQL\@.
+\begin{itemize}
+    \item \textbf{PostgreSQL :} Standard open-source, images Docker très légères (contrairement à MSSQL Server qui est lourd en local).
+    \item \textbf{Prisma :} Remplace les requêtes SQL manuelles par un client typé auto-généré.
+    Il garantit que si le schéma de base de données change, le code ne compile plus (Type Safety), évitant les erreurs au runtime.
+\end{itemize}

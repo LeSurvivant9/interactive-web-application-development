@@ -1,25 +1,58 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1-alpine AS base
 WORKDIR /app
 
-# 1. Install Dependencies
-# On copie les configs racine pour les workspaces
 COPY package.json bun.lock ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+COPY backend/prisma ./backend/prisma
 
+FROM base AS build_deps
 RUN bun install --frozen-lockfile
 
-# 2. Build
+FROM oven/bun:1-alpine AS prod_deps
+WORKDIR /app
+COPY backend/package.json ./backend/
+COPY backend/prisma ./backend/prisma
+# On installe les dépendances en ignorant le workspace racine pour forcer une installation locale
+RUN cd backend && bun install --production --ignore-scripts --backend=copy
+
+FROM build_deps AS builder
 COPY backend ./backend
 COPY tsconfig.json ./
+
+RUN bunx prisma generate --schema=backend/prisma/schema.prisma
+
 WORKDIR /app/backend
-RUN bun run build
+RUN bun build ./src/main.ts --outfile server.js --target=bun \
+    --external "@nestjs/websockets/*" \
+    --external "@nestjs/microservices/*" \
+    --external "@nestjs/microservices" \
+    --external "ts-morph" \
+    --external "@apollo/subgraph" \
+    --external "@apollo/gateway" \
+    --external "@as-integrations/fastify" \
+    --external "class-transformer/storage" \
+    --external "argon2" \
+    --external "@prisma/client" \
+    --external "pino-pretty" \
+    --external "pino" \
+    --external "nestjs-pino" \
+    --external "pino-http" \
+    --external "thread-stream"
 
-# 3. Production Image
-FROM oven/bun:1-alpine
+FROM oven/bun:1-alpine AS runner
 WORKDIR /app
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/backend/dist ./dist
-COPY --from=base /app/backend/package.json ./
+ENV NODE_ENV production
 
-CMD ["bun", "run", "dist/main.js"]
+# Copie directe des modules natifs/prod pré-installés
+COPY --from=prod_deps /app/backend/node_modules ./node_modules
+COPY --from=builder /app/backend/server.js ./server.js
+COPY --from=builder /app/backend/prisma ./prisma
+
+# Création d'un fichier de configuration minimal pour Prisma en production
+# Cela est nécessaire pour que 'prisma migrate deploy' puisse lire la DATABASE_URL
+RUN echo "module.exports = { schema: 'prisma/schema.prisma', datasource: { url: process.env.DATABASE_URL } };" > prisma.config.js
+
+EXPOSE 3000
+
+CMD ["bun", "run", "server.js"]

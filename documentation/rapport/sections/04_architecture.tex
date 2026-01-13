@@ -1,0 +1,19 @@
+\section{Architecture Technique}\label{sec:architecture}
+
+Description de l'infrastructure logicielle mise en place pour soutenir le développement et l'exécution de l'application.
+
+\begin{figure}[htbp]
+  \centering
+  \includesvg[width=0.9\textwidth]{class_diagram}
+  \caption{Diagramme de classes}\label{fig:uml_arch}
+\end{figure}
+
+\subsection{Structure monorepo}\label{subsec:monorepo}
+
+Présentation de l'organisation du code en un dépôt unique contenant backend, frontend et documentation.
+Avantages liés au partage de configuration (ESLint, TSConfig) et à l'atomicité des commits.
+
+\subsection{Protocole de communication (GraphQL)}\label{subsec:graphql}
+
+Justification de l'utilisation de GraphQL face à REST\@.
+Explication des avantages : réduction de l'\textit{over-fetching}, typage fort via l'introspection, et génération automatique du code client.

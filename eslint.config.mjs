@@ -8,6 +8,7 @@ export default tseslint.config(
       "**/.next/**",
       "**/prisma/generated/**",
       "**/graphql/generated.ts",
+      "backend/index.js",
     ],
   },
   {
@@ -15,7 +16,11 @@ export default tseslint.config(
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: ["./backend/tsconfig.json", "./frontend/tsconfig.json"],
+        project: [
+          "./tsconfig.json",
+          "./backend/tsconfig.json",
+          "./frontend/tsconfig.json",
+        ],
         tsconfigRootDir: import.meta.dirname,
       },
     },

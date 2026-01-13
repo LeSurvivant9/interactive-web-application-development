@@ -28,7 +28,7 @@ package "Sécurité & Compte (RGPD)" {
 package "Gestion collection" {
     usecase "Rechercher (API TVDB)" as UC_Search
     usecase "Ajouter à la collection" as UC_Add
-    usecase "Gérer un média\n(Archiver / Retirer)" as UC_ManageMedia
+    usecase "Gérer un média" as UC_ManageMedia
     usecase "Noter / Commenter" as UC_Rate
     usecase "Signaler un commentaire" as UC_Report
 

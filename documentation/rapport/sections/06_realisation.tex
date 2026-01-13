@@ -1,0 +1,50 @@
+\section{Implémentation et qualité}\label{sec:realisation}
+
+Détails sur la phase de développement, les défis techniques rencontrés et les solutions d'ingénierie logicielle appliquées.
+
+\subsection{Stratégie de qualité code (static analysis)}\label{subsec:qualite_code}
+
+Compte tenu des contraintes temporelles strictes du projet, la stratégie de qualité s'est concentrée sur l'analyse statique et la prévention des bugs en amont, plutôt que sur une couverture de tests unitaires a posteriori.
+
+\begin{itemize}
+    \item \textbf{Typage strict (TypeScript) :} L'utilisation de TypeScript en mode \texttt{strict} sur toute la stack garantit la cohérence des structures de données.
+    \item Le partage des types DTO entre le back et le front empêche les erreurs d'incompatibilité API\@.
+    \item \textbf{Linter unifié (Biome) :} L'outil Biome remplace ESLint et Prettier pour imposer des standards de code rigoureux.
+    \item \textbf{Hooks de pré-commit :} L'outil \texttt{lint-staged} empêche physiquement tout commit ne respectant pas les règles de formatage ou contenant des erreurs de syntaxe, agissant comme une première barrière de qualité (quality gate).
+\end{itemize}
+
+\subsection{Gestion des erreurs standardisée}\label{subsec:error_handling}
+
+L'API backend implémente un mappage précis des erreurs de base de données vers des exceptions HTTP compréhensibles.
+Par exemple, le code d'erreur Prisma \texttt{P2002} (violation d'unicité) est intercepté dans les services et transformé en une \texttt{ConflictException} (HTTP 409) avec un message clair (\enquote{Nom d'utilisateur ou adresse mail déjà utilisé}).
+Cela permet au frontend d'afficher des feedbacks précis à l'utilisateur sans exposer la structure interne de la base de données.
+
+\subsection{Développement backend (NestJS)}\label{subsec:dev_backend}
+
+Focus sur l'utilisation des décorateurs et des modules.
+Explication de la sécurisation de l'API via les Guards JWT et la stratégie \enquote{private by default} (décorateur \texttt{@Public}).
+
+\begin{code}{typescript}
+    {Contrôleur NestJS : MediaController}
+    @Controller('media')
+    export class MediaController {
+        @Get(':id')
+        findOne(@Param('id') id: string) {
+            return this.mediaService.findById(id);
+        }
+    }
+\end{code}
+
+\subsection{Développement frontend (Next.js)}\label{subsec:dev_frontend}
+
+Détails sur l'intégration des composants UI (Shadcn/UI), la gestion du cache avec Apollo Client et l'expérience utilisateur (UX).
+
+\subsection{Qualité et outillage (innovation)}\label{subsec:outillage_innovation}
+
+Présentation de la démarche d'innovation technique (BC 1.5).
+Utilisation de \textbf{Bun} comme runtime haute performance et de \textbf{Biome} pour un linting/formatting ultra-rapide, garantissant une \enquote{expérience développeur} moderne.
+
+\subsection{Déploiement et administration}\label{subsec:deploiement}
+
+Description de la conteneurisation via Docker et Docker Compose.
+Gestion des variables d'environnement et administration des données via prisma studio.

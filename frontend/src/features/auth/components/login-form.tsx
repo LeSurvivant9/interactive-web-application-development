@@ -1,9 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -32,10 +33,18 @@ const formSchema = z.object({
     .min(6, { message: "Le mot de passe doit faire au moins 6 caractères" }),
 });
 
-export default function LoginForm() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const registered = searchParams?.get("registered") === "true";
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (registered) {
+      setError("Inscription réussie ! Vous pouvez maintenant vous connecter.");
+    }
+  }, [registered]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -118,15 +127,37 @@ export default function LoginForm() {
             />
 
             {error && (
-              <div className="text-red-500 text-sm font-medium">{error}</div>
+              <div
+                className={`${registered && error?.includes("réussie") ? "text-green-500" : "text-red-500"} text-sm font-medium`}
+              >
+                {error}
+              </div>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Connexion..." : "Se connecter"}
             </Button>
+
+            <div className="text-center text-sm">
+              Pas encore de compte ?{" "}
+              <Link
+                href="/auth/register"
+                className="underline underline-offset-4 hover:text-primary"
+              >
+                S'inscrire
+              </Link>
+            </div>
           </form>
         </Form>
       </CardContent>
     </Card>
+  );
+}
+
+export default function LoginForm() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
