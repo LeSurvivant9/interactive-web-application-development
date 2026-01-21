@@ -28,11 +28,11 @@ RUN bun build ./src/main.ts --outfile server.js --target=bun \
     --external "@nestjs/microservices/*" \
     --external "@nestjs/microservices" \
     --external "ts-morph" \
+    --external "argon2" \
     --external "@apollo/subgraph" \
     --external "@apollo/gateway" \
     --external "@as-integrations/fastify" \
     --external "class-transformer/storage" \
-    --external "argon2" \
     --external "@prisma/client" \
     --external "pino-pretty" \
     --external "pino" \

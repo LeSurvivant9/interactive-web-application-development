@@ -1,15 +1,20 @@
 import { IncomingMessage } from "node:http";
 import { join } from "node:path";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { CacheModule } from "@nestjs/cache-manager";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_FILTER, APP_GUARD } from "@nestjs/core";
 import { GraphQLModule } from "@nestjs/graphql";
 import { LoggerModule } from "nestjs-pino";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
+import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
+import { AtLeastOneGqlExceptionFilter } from "./common/filters/gql-exceptions.filter";
+import { PrismaClientExceptionFilter } from "./common/filters/prisma-client-exception.filter";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { TvdbModule } from "./tvdb/tvdb.module";
 import { UsersModule } from "./users/users.module";
 
 @Module({
@@ -29,7 +34,7 @@ import { UsersModule } from "./users/users.module";
       pinoHttp: {
         transport:
           process.env.NODE_ENV !== "production"
-            ? { target: "pino-pretty", options: { colorize: true } }
+            ? { target: "pino-pretty", options: { colorize: true, sync: true } }
             : undefined,
         serializers: {
           req: (req: IncomingMessage) => {
@@ -47,12 +52,30 @@ import { UsersModule } from "./users/users.module";
     HealthModule,
     PrismaModule,
     UsersModule,
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 10 * 60 * 1000,
+      max: 1000,
+    }),
+    TvdbModule,
   ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AtLeastOneGqlExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: PrismaClientExceptionFilter,
     },
   ],
 })

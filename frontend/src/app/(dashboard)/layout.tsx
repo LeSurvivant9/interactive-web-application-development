@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import type React from "react";
+import { ReactNode } from "react";
 import { auth } from "@/auth";
 import { Sidebar } from "@/features/dashboard/components/sidebar";
 import { UserNav } from "@/features/dashboard/components/user-nav";
@@ -7,7 +7,7 @@ import { UserNav } from "@/features/dashboard/components/user-nav";
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const session = await auth();
 

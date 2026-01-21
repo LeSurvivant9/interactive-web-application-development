@@ -7,8 +7,12 @@ import { MeDocument } from "@/graphql/generated";
 export default function DashboardPage() {
   const { data, loading, error } = useQuery(MeDocument);
 
-  if (loading) return <div>Chargement de vos données...</div>;
-  if (error) return <div className="text-red-500">Erreur: {error.message}</div>;
+  if (loading) {
+    return <div>Chargement de vos données...</div>;
+  }
+  if (error) {
+    return <div className="text-red-500">Erreur: {error.message}</div>;
+  }
 
   return (
     <div>

@@ -6,7 +6,6 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
 import { PrismaClient } from "../../prisma/generated/client/client";
 
 @Injectable()
@@ -17,11 +16,10 @@ export class PrismaService
   private readonly logger = new Logger(PrismaService.name);
 
   constructor(private configService: ConfigService) {
-    const pool = new Pool({
+    const adapter = new PrismaPg({
       connectionString: configService.get<string>("DATABASE_URL"),
     });
-    const adapter = new PrismaPg(pool);
-    super({ adapter });
+    super({ adapter, log: ["query", "info", "warn", "error"] });
   }
 
   async onModuleInit() {

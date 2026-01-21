@@ -21,9 +21,21 @@ export class AuthService {
       throw new UnauthorizedException("Adresse mail ou mot de passe incorrect");
     }
 
-    const isPasswordValid = await argon2.verify(user.passwordHash, password);
+    try {
+      const isPasswordValid = await argon2.verify(user.passwordHash, password);
 
-    if (!isPasswordValid) {
+      if (!isPasswordValid) {
+        throw new UnauthorizedException(
+          "Adresse mail ou mot de passe incorrect",
+        );
+      }
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      console.error("Password verification error:", error);
+      console.error("User email:", user.email);
+      console.error("Hash prefix:", user.passwordHash.substring(0, 15));
       throw new UnauthorizedException("Adresse mail ou mot de passe incorrect");
     }
 

@@ -23,23 +23,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (validatedFields.success) {
           const { email, password } = validatedFields.data;
 
-          const response = await fetch(
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/graphql",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                query: print(LoginDocument),
-                variables: {
-                  loginInput: { email, password },
-                },
-              }),
-            },
-          );
+          const apiUrl =
+            process.env.INTERNAL_API_URL ||
+            process.env.NEXT_PUBLIC_API_URL ||
+            "http://localhost:3000/graphql";
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: print(LoginDocument),
+              variables: {
+                loginInput: { email, password },
+              },
+            }),
+          });
 
           const result = await response.json();
 
-          if (result.errors || !result.data?.login) {
+          if (result.errors) {
+            const error = result.errors[0];
+            if (error.extensions?.status === 401) {
+              throw new Error(error.message || "Identifiants incorrects");
+            }
+            throw new Error(error.message || "Une erreur est survenue");
+          }
+
+          if (!result.data?.login) {
             return null;
           }
 

@@ -66,7 +66,11 @@ function LoginContent() {
       });
 
       if (result?.error) {
-        setError("Adresse mail ou mot de passe incorrect");
+        if (result.error === "CredentialsSignin") {
+          setError("Adresse mail ou mot de passe incorrect");
+        } else {
+          setError(result.error);
+        }
         setLoading(false);
         return;
       }

@@ -1,0 +1,10 @@
+query Search($query: String!) {
+  searchMedia(query: $query) {
+    tvdb_id
+    name
+    image_url
+    overview
+    type
+    year
+  }
+}

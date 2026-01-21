@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import * as argon2 from "argon2";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserInput } from "./dto/create-user.input";
@@ -11,35 +11,21 @@ export class UsersService {
   async create(createUserInput: CreateUserInput) {
     const passwordHash = await argon2.hash(createUserInput.password);
 
-    try {
-      return await this.prisma.user.create({
-        data: {
-          username: createUserInput.username,
-          email: createUserInput.email,
-          passwordHash,
-          role: "USER",
-        },
-      });
-    } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "P2002"
-      ) {
-        throw new ConflictException(
-          "Nom d'utilisateur ou adresse mail déjà utilisé",
-        );
-      }
-      throw error;
-    }
+    return this.prisma.user.create({
+      data: {
+        email: createUserInput.email,
+        username: createUserInput.username,
+        passwordHash,
+        role: "USER",
+      },
+    });
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.user.findMany();
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
@@ -65,7 +51,7 @@ export class UsersService {
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
     return this.prisma.user.delete({ where: { id } });
   }
 }

@@ -2,16 +2,18 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return null;
+  }
 
   const isDark = resolvedTheme === "dark";
 

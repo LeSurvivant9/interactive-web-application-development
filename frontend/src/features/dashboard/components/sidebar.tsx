@@ -1,5 +1,6 @@
 import { LayoutDashboard, Settings, User } from "lucide-react";
 import Link from "next/link";
+import { GlobalSearch } from "@/components/global-search";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,7 @@ export function Sidebar() {
           <h1 className="text-2xl font-bold">MediaTracker</h1>
         </Link>
         <div className="space-y-1 flex-1">
+          <GlobalSearch />
           {routes.map((route) => (
             <Link
               key={route.href}

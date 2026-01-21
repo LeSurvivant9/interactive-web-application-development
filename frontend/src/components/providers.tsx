@@ -10,13 +10,13 @@ import { SetContextLink } from "@apollo/client/link/context";
 import { ApolloProvider } from "@apollo/client/react";
 import { SessionProvider, useSession } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
-import React, { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 
 const httpLink = new HttpLink({
   uri: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/graphql",
 });
 
-const ApolloWrapper = ({ children }: { children: React.ReactNode }) => {
+const ApolloWrapper = ({ children }: { children: ReactNode }) => {
   const { data: session } = useSession();
 
   const client = useMemo(() => {
@@ -40,7 +40,7 @@ const ApolloWrapper = ({ children }: { children: React.ReactNode }) => {
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

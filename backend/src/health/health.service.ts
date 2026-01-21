@@ -3,12 +3,14 @@ import { ModuleRef } from "@nestjs/core";
 import { GraphQLSchemaHost } from "@nestjs/graphql";
 import { execute, parse } from "graphql";
 import { PrismaService } from "../prisma/prisma.service";
+import { TvdbService } from "../tvdb/tvdb.service";
 
 @Injectable()
 export class HealthService {
   private schemaHost: GraphQLSchemaHost;
   constructor(
     private prisma: PrismaService,
+    private tvdb: TvdbService,
     private moduleRef: ModuleRef,
   ) {}
 
@@ -22,6 +24,7 @@ export class HealthService {
       timestamp: new Date().toISOString(),
       database: "unknown",
       graphql: "unknown",
+      tvdb: "unknown",
       errors: [],
     };
 
@@ -56,6 +59,23 @@ export class HealthService {
       const message = error instanceof Error ? error.message : String(error);
       result.errors.push(`GQL: ${message}`);
     }
+
+    try {
+      const isTvdbConnected = await this.tvdb.checkConnection();
+      if (isTvdbConnected) {
+        result.tvdb = "connected";
+      } else {
+        result.status = "error";
+        result.tvdb = "disconnected";
+        result.errors.push("TVDB: Connection failed");
+      }
+    } catch (error) {
+      result.status = "error";
+      result.tvdb = "failed";
+      const message = error instanceof Error ? error.message : String(error);
+      result.errors.push(`TVDB: ${message}`);
+    }
+
     return result;
   }
 }

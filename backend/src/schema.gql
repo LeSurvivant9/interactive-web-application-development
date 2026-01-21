@@ -32,6 +32,7 @@ type Mutation {
 
 type Query {
   me: User!
+  searchMedia(query: String!): [TvdbSearchResult!]!
   user(id: ID!): User
   users: [User!]!
 }
@@ -39,6 +40,15 @@ type Query {
 enum Role {
   ADMIN
   USER
+}
+
+type TvdbSearchResult {
+  image_url: String
+  name: String!
+  overview: String
+  tvdb_id: ID
+  type: String
+  year: String
 }
 
 input UpdateUserInput {

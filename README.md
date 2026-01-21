@@ -8,56 +8,71 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants installés :
 - **Docker** et **Docker Compose**
 - Un fichier `.env` à la racine du projet (voir configuration ci-dessous)
 
-### Configuration des variables d'environnement
+## Configuration des variables d'environnement
 
-Créez un fichier `.env` à la racine avec les variables suivantes :
+Copiez le fichier d'exemple et remplissez les valeurs :
 
-```env
-POSTGRES_USER=votre_utilisateur
-POSTGRES_PASSWORD=votre_mot_de_passe
-POSTGRES_DB=mediatracker
-NEXT_PUBLIC_API_URL=http://localhost:3000/graphql
-JWT_SECRET=votre_secret_jwt
+```bash
+cp .env.example .env
 ```
 
-Pour générer un `JWT_SECRET` sécurisé, vous pouvez utiliser la commande suivante :
+Assurez-vous que les variables `JWT_SECRET` et `AUTH_SECRET` sont bien renseignées. Vous pouvez en générer via :
 
 ```bash
 openssl rand -base64 32
 ```
 
-## Lancement rapide (Makefile)
+> **Note** : Le frontend utilise `NEXT_PUBLIC_API_URL` pour les appels côté navigateur et `INTERNAL_API_URL` pour les appels côté serveur. En local avec Bun, les deux pointent généralement vers `http://localhost:3000/graphql`. Dans Docker, `INTERNAL_API_URL` est automatiquement géré pour pointer vers `http://backend:3000/graphql`.
 
-Si vous avez `make` installé sur votre machine, vous pouvez utiliser les commandes suivantes pour simplifier la gestion du projet :
+## Lancement du projet
 
-- `make build` : Construit les images Docker.
-- `make up` : Lance le projet en tâche de fond.
-- `make logs` : Affiche les logs en temps réel.
-- `make down` : Arrête les services.
-- `make clean` : Arrête et supprime les volumes (attention, les données de la DB seront perdues).
+### Option 1 : Via Docker (Recommandé)
 
-## Lancement avec Docker
-
-Pour lancer l'ensemble du projet (base de données, redis, backend et frontend) avec Docker manuellement :
+Pour lancer l'ensemble du projet (base de données, Redis, backend et frontend) :
 
 ```bash
 docker compose up --build
 ```
 
+Ou via le Makefile : `make up`
+
 Une fois lancé :
 
-- Le frontend est accessible sur : `http://localhost:3001`
-- Le backend est accessible sur : `http://localhost:3000`
+- **Frontend** : `http://localhost:3001`
+- **Backend (GraphQL)** : `http://localhost:3000/graphql`
 
-## Installation des dépendances (Développement local)
+### Option 2 : Développement local (Bun)
 
-Pour installer les dépendances de l'ensemble du projet (monorepo), exécutez la commande suivante à la racine :
+1. **Lancer les services d'infrastructure** (DB & Redis) :
 
-```bash
-bun install
-```
+   ```bash
+   docker compose up postgres redis -d
+   ```
 
-### Ajouter des dépendances
+2. **Installer les dépendances** :
+
+   ```bash
+   bun install
+   ```
+
+3. **Lancer le backend** :
+
+   ```bash
+   cd backend
+   bun run dev
+   ```
+
+4. **Lancer le frontend** :
+   ```bash
+   cd frontend
+   bun run dev
+   ```
+
+Le frontend sera accessible sur `http://localhost:3001` et le backend sur `http://localhost:3000/graphql`.
+
+> **Note sur les ports** : Par défaut, le backend utilise le port **3000** et le frontend le port **3001** (configuré dans leurs fichiers `package.json` ou via les variables d'environnement). En mode Docker, ces ports sont mappés pour correspondre à cette configuration.
+
+## Gestion des dépendances (Monorepo)
 
 - **Globalement (à la racine) :**
 

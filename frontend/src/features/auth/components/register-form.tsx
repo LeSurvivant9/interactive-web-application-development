@@ -76,19 +76,24 @@ export default function RegisterForm() {
       if (data?.createUser) {
         router.push("/auth/login?registered=true");
       }
-    } catch (err: unknown) {
-      const error = err as Error;
+    } catch (err: any) {
+      let errorMessage = "Une erreur est survenue lors de l'inscription";
+
+      if (err.graphQLErrors && err.graphQLErrors.length > 0) {
+        errorMessage = err.graphQLErrors[0].message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
       logger.error(
         {
-          err: error,
+          err,
           email: values.email,
           event: "registration_failed",
         },
         "Échec de l'inscription utilisateur",
       );
-      setError(
-        error.message || "Une erreur est survenue lors de l'inscription",
-      );
+      setError(errorMessage);
     }
   }
 

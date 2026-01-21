@@ -73,8 +73,13 @@ export type IMutationUpdateUserArgs = {
 export type IQuery = {
   __typename: "Query";
   me: IUser;
+  searchMedia: Array<ITvdbSearchResult>;
   user: Maybe<IUser>;
   users: Array<IUser>;
+};
+
+export type IQuerySearchMediaArgs = {
+  query: Scalars["String"]["input"];
 };
 
 export type IQueryUserArgs = {
@@ -85,6 +90,16 @@ export enum IRole {
   Admin = "ADMIN",
   User = "USER",
 }
+
+export type ITvdbSearchResult = {
+  __typename: "TvdbSearchResult";
+  image_url: Maybe<Scalars["String"]["output"]>;
+  name: Scalars["String"]["output"];
+  overview: Maybe<Scalars["String"]["output"]>;
+  tvdb_id: Maybe<Scalars["ID"]["output"]>;
+  type: Maybe<Scalars["String"]["output"]>;
+  year: Maybe<Scalars["String"]["output"]>;
+};
 
 export type IUpdateUserInput = {
   email?: InputMaybe<Scalars["String"]["input"]>;
@@ -146,6 +161,22 @@ export type ILoginMutation = {
       role: IRole;
     };
   };
+};
+
+export type ISearchQueryVariables = Exact<{
+  query: Scalars["String"]["input"];
+}>;
+
+export type ISearchQuery = {
+  searchMedia: Array<{
+    __typename: "TvdbSearchResult";
+    tvdb_id: string | null;
+    name: string;
+    image_url: string | null;
+    overview: string | null;
+    type: string | null;
+    year: string | null;
+  }>;
 };
 
 export type IGetUsersQueryVariables = Exact<{ [key: string]: never }>;
@@ -318,6 +349,62 @@ export const LoginDocument = {
     },
   ],
 } as unknown as DocumentNode<ILoginMutation, ILoginMutationVariables>;
+export const SearchDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "Search" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "query" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "searchMedia" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "query" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "query" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "tvdb_id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: "Field", name: { kind: "Name", value: "image_url" } },
+                { kind: "Field", name: { kind: "Name", value: "overview" } },
+                { kind: "Field", name: { kind: "Name", value: "type" } },
+                { kind: "Field", name: { kind: "Name", value: "year" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ISearchQuery, ISearchQueryVariables>;
 export const GetUsersDocument = {
   kind: "Document",
   definitions: [

@@ -1,10 +1,148 @@
 generator client {
-  provider = "prisma-client"
-  output   = "./generated/client"
+  provider   = "prisma-client"
+  output     = "./generated/client"
+  engineType = "client"
+  runtime    = "bun"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id              String        @id @default(uuid()) @db.Uuid
+  username        String        @unique
+  email           String        @unique
+  passwordHash    String
+  avatarUrl       String?
+  role            Role          @default(USER)
+  privacySettings Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  comments        Comment[]
+  customLists     CustomList[]
+  userEpisodes    UserEpisode[]
+  userMedias      UserMedia[]
+  watchLogs       WatchLog[]
+}
+
+model Media {
+  id            Int          @id @default(autoincrement())
+  tvdbId        String       @unique
+  title         String
+  originalTitle String?
+  synopsis      String?
+  posterPath    String?
+  backdropPath  String?
+  releaseDate   DateTime?
+  status        String?
+  syncStatus    SyncStatus   @default(PROCESSING)
+  genres        String[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  type          MediaType
+  duration      Int?
+  budget        BigInt?
+  totalSeasons  Int?
+  network       String?
+  comments      Comment[]
+  seasons       Season[]
+  userMedias    UserMedia[]
+  watchLogs     WatchLog[]
+  customLists   CustomList[] @relation("MediaInLists")
+}
+
+model Season {
+  id           Int       @id @default(autoincrement())
+  number       Int
+  episodeCount Int
+  posterPath   String?
+  airDate      DateTime?
+  seriesId     Int
+  episodes     Episode[]
+  series       Media     @relation(fields: [seriesId], references: [id])
+}
+
+model Episode {
+  id             Int           @id @default(autoincrement())
+  tvdbId         String        @unique
+  number         Int
+  absoluteNumber Int?
+  title          String
+  overview       String?
+  runtime        Int?
+  airDate        DateTime?
+  imagePath      String?
+  seasonId       Int
+  comments       Comment[]
+  season         Season        @relation(fields: [seasonId], references: [id])
+  userEpisodes   UserEpisode[]
+  watchLogs      WatchLog[]
+}
+
+model UserMedia {
+  id           Int         @id @default(autoincrement())
+  rating       Int?
+  status       WatchStatus @default(PLAN_TO_WATCH)
+  isFavorite   Boolean     @default(false)
+  rewatchCount Int         @default(0)
+  addedAt      DateTime    @default(now())
+  userId       String      @db.Uuid
+  mediaId      Int
+  media        Media       @relation(fields: [mediaId], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
+
+  @@unique([userId, mediaId])
+}
+
+model UserEpisode {
+  id         Int      @id @default(autoincrement())
+  userRating Int?
+  watchedAt  DateTime @default(now())
+  userId     String   @db.Uuid
+  episodeId  Int
+  episode    Episode  @relation(fields: [episodeId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, episodeId])
+}
+
+model CustomList {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id])
+  medias      Media[]  @relation("MediaInLists")
+}
+
+model Comment {
+  id              Int      @id @default(autoincrement())
+  content         String
+  containsSpoiler Boolean  @default(false)
+  postedAt        DateTime @default(now())
+  reportCount     Int      @default(0)
+  userId          String   @db.Uuid
+  mediaId         Int?
+  episodeId       Int?
+  episode         Episode? @relation(fields: [episodeId], references: [id])
+  media           Media?   @relation(fields: [mediaId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model WatchLog {
+  id          Int      @id @default(autoincrement())
+  watchedDate DateTime @default(now())
+  platform    String?
+  userId      String   @db.Uuid
+  mediaId     Int?
+  episodeId   Int?
+  episode     Episode? @relation(fields: [episodeId], references: [id])
+  media       Media?   @relation(fields: [mediaId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 enum Role {
@@ -26,146 +164,7 @@ enum WatchStatus {
   DROPPED
 }
 
-model User {
-  id              String        @id @default(uuid()) @db.Uuid
-  username        String        @unique
-  email           String        @unique
-  passwordHash    String
-  avatarUrl       String?
-  role            Role          @default(USER)
-  privacySettings Json?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  userMedias      UserMedia[]
-  userEpisodes    UserEpisode[]
-  customLists     CustomList[]
-  comments        Comment[]
-  watchLogs       WatchLog[]
-}
-
-model Media {
-  id            Int        @id @default(autoincrement())
-  tvdbId        String     @unique
-  title         String
-  originalTitle String?
-  synopsis      String?    @db.Text
-  posterPath    String?
-  backdropPath  String?
-  releaseDate   DateTime?
-  status        String?
-  syncStatus    SyncStatus @default(PROCESSING)
-  genres        String[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-
-  // Inheritance simulation (Discriminator or optional fields)
-  type         MediaType
-  duration     Int? // For Movie
-  budget       BigInt? // For Movie
-  totalSeasons Int? // For Series
-  network      String? // For Series
-
-  seasons     Season[]
-  userMedias  UserMedia[]
-  customLists CustomList[] @relation("MediaInLists")
-  comments    Comment[]
-  watchLogs   WatchLog[]
-}
-
 enum MediaType {
   MOVIE
   SERIES
-}
-
-model Season {
-  id           Int       @id @default(autoincrement())
-  number       Int
-  episodeCount Int
-  posterPath   String?
-  airDate      DateTime?
-  seriesId     Int
-  series       Media     @relation(fields: [seriesId], references: [id])
-  episodes     Episode[]
-}
-
-model Episode {
-  id             Int           @id @default(autoincrement())
-  tvdbId         String        @unique
-  number         Int
-  absoluteNumber Int?
-  title          String
-  overview       String?       @db.Text
-  runtime        Int?
-  airDate        DateTime?
-  imagePath      String?
-  seasonId       Int
-  season         Season        @relation(fields: [seasonId], references: [id])
-  userEpisodes   UserEpisode[]
-  comments       Comment[]
-  watchLogs      WatchLog[]
-}
-
-model UserMedia {
-  id           Int         @id @default(autoincrement())
-  rating       Int? // 0-5
-  status       WatchStatus @default(PLAN_TO_WATCH)
-  isFavorite   Boolean     @default(false)
-  rewatchCount Int         @default(0)
-  addedAt      DateTime    @default(now())
-  userId       String      @db.Uuid
-  user         User        @relation(fields: [userId], references: [id])
-  mediaId      Int
-  media        Media       @relation(fields: [mediaId], references: [id])
-
-  @@unique([userId, mediaId])
-}
-
-model UserEpisode {
-  id         Int      @id @default(autoincrement())
-  userRating Int? // 0-5
-  watchedAt  DateTime @default(now())
-  userId     String   @db.Uuid
-  user       User     @relation(fields: [userId], references: [id])
-  episodeId  Int
-  episode    Episode  @relation(fields: [episodeId], references: [id])
-
-  @@unique([userId, episodeId])
-}
-
-model CustomList {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?  @db.Text
-  isPublic    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String   @db.Uuid
-  user        User     @relation(fields: [userId], references: [id])
-  medias      Media[]  @relation("MediaInLists")
-}
-
-model Comment {
-  id              Int      @id @default(autoincrement())
-  content         String   @db.Text
-  containsSpoiler Boolean  @default(false)
-  postedAt        DateTime @default(now())
-  reportCount     Int      @default(0)
-  userId          String   @db.Uuid
-  user            User     @relation(fields: [userId], references: [id])
-  mediaId         Int?
-  media           Media?   @relation(fields: [mediaId], references: [id])
-  episodeId       Int?
-  episode         Episode? @relation(fields: [episodeId], references: [id])
-}
-
-model WatchLog {
-  id          Int      @id @default(autoincrement())
-  watchedDate DateTime @default(now())
-  platform    String?
-  userId      String   @db.Uuid
-  user        User     @relation(fields: [userId], references: [id])
-  mediaId     Int?
-  media       Media?   @relation(fields: [mediaId], references: [id])
-  episodeId   Int?
-  episode     Episode? @relation(fields: [episodeId], references: [id])
 }

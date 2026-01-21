@@ -32,7 +32,8 @@
     "rules": {
       "recommended": true,
       "style": {
-        "useImportType": "off"
+        "useImportType": "off",
+        "useBlockStatements": "error"
       }
     }
   },
