@@ -1,11 +1,13 @@
 "use client";
 
 import { useQuery } from "@apollo/client/react";
+import { MediaCarousel } from "@/components/dashboard/media-carousel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MeDocument } from "@/graphql/generated";
+import { GetDashboardDataDocument, MeDocument } from "@/graphql/generated";
 
 export default function DashboardPage() {
-  const { data, loading, error } = useQuery(MeDocument);
+  const { data: meData, loading, error } = useQuery(MeDocument);
+  const { data: mediaData } = useQuery(GetDashboardDataDocument);
 
   if (loading) {
     return <div>Chargement de vos données...</div>;
@@ -26,8 +28,8 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">Utilisateur</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.me.username}</div>
-            <p className="text-xs text-muted-foreground">{data?.me.email}</p>
+            <div className="text-2xl font-bold">{meData?.me.username}</div>
+            <p className="text-xs text-muted-foreground">{meData?.me.email}</p>
           </CardContent>
         </Card>
 
@@ -36,15 +38,30 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">Rôle</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.me.role}</div>
+            <div className="text-2xl font-bold">{meData?.me.role}</div>
             <p className="text-xs text-muted-foreground">
               Depuis le{" "}
-              {data?.me.createdAt
-                ? new Date(data.me.createdAt).toLocaleDateString()
+              {meData?.me.createdAt
+                ? new Date(meData.me.createdAt).toLocaleDateString()
                 : "Date inconnue"}
             </p>
           </CardContent>
         </Card>
+      </div>
+      <div className="container py-8 space-y-10">
+        <section>
+          <MediaCarousel
+            title="🔥 Séries populaires"
+            items={mediaData?.popularSeries || []}
+          />
+        </section>
+
+        <section>
+          <MediaCarousel
+            title="🍿 Films du moment"
+            items={mediaData?.popularMovies || []}
+          />
+        </section>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { Public } from "../auth/decorators/public.decorator";
 import { AuthenticatedUser } from "../auth/types";
 import { CreateUserInput } from "./dto/create-user.input";
 import { UpdateUserInput } from "./dto/update-user.input";
-import { User } from "./entities/user.entity";
+import { User } from "./models/user.model";
 import { UsersService } from "./users.service";
 
 @Resolver(() => User)

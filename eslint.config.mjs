@@ -1,6 +1,7 @@
+import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig([
   {
     ignores: [
       "**/dist/**",
@@ -31,4 +32,4 @@ export default tseslint.config(
       "@typescript-eslint/no-deprecated": "warn",
     },
   },
-);
+]);

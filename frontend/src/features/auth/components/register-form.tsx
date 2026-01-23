@@ -76,7 +76,7 @@ export default function RegisterForm() {
       if (data?.createUser) {
         router.push("/auth/login?registered=true");
       }
-    } catch (err: any) {
+    } catch (err) {
       let errorMessage = "Une erreur est survenue lors de l'inscription";
 
       if (err.graphQLErrors && err.graphQLErrors.length > 0) {

@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 import { GraphQLSchemaHost } from "@nestjs/graphql";
 import { execute, parse } from "graphql";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "../database/prisma/prisma.service";
 import { TvdbService } from "../tvdb/tvdb.service";
 
 @Injectable()
 export class HealthService {
   private schemaHost: GraphQLSchemaHost;
+
   constructor(
     private prisma: PrismaService,
     private tvdb: TvdbService,

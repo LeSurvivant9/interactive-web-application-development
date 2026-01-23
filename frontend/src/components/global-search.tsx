@@ -24,7 +24,7 @@ export function GlobalSearch() {
 
   const debouncedQuery = useDebounce(query, 500);
 
-  const { data, loading, error } = useQuery(SearchDocument, {
+  const { data, loading } = useQuery(SearchDocument, {
     variables: { query: debouncedQuery },
     skip: debouncedQuery.length < 3,
   });

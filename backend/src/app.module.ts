@@ -9,11 +9,16 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { LoggerModule } from "nestjs-pino";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
+import { CollectionsModule } from "./collections/collections.module";
+import { CommentsModule } from "./comments/comments.module";
 import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
 import { AtLeastOneGqlExceptionFilter } from "./common/filters/gql-exceptions.filter";
 import { PrismaClientExceptionFilter } from "./common/filters/prisma-client-exception.filter";
+import configuration from "./config/configuration";
+import { validate } from "./config/env.validation";
+import { PrismaModule } from "./database/prisma/prisma.module";
 import { HealthModule } from "./health/health.module";
-import { PrismaModule } from "./prisma/prisma.module";
+import { MediasModule } from "./medias/medias.module";
 import { TvdbModule } from "./tvdb/tvdb.module";
 import { UsersModule } from "./users/users.module";
 
@@ -21,12 +26,16 @@ import { UsersModule } from "./users/users.module";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [configuration],
       envFilePath: join(process.cwd(), ".env"),
+      validate,
+      cache: true,
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       sortSchema: true,
+      context: ({ req, res }) => ({ req, res }),
       introspection: process.env.NODE_ENV !== "production",
       playground: process.env.NODE_ENV !== "production",
     }),
@@ -54,10 +63,13 @@ import { UsersModule } from "./users/users.module";
     UsersModule,
     CacheModule.register({
       isGlobal: true,
-      ttl: 10 * 60 * 1000,
+      ttl: 30 * 60 * 1000,
       max: 1000,
     }),
     TvdbModule,
+    MediasModule,
+    CollectionsModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [

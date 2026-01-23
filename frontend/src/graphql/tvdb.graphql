@@ -8,3 +8,20 @@ query Search($query: String!) {
     year
   }
 }
+
+query GetDashboardData {
+  popularMovies {
+    tvdb_id
+    name
+    image_url
+    type
+    year
+  }
+  popularSeries {
+    tvdb_id
+    name
+    image_url
+    type
+    year
+  }
+}

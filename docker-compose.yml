@@ -19,6 +19,8 @@ services:
   redis:
     image: redis:8-alpine
     container_name: mediatracker_redis
+    volumes:
+      - redis_data:/data
     ports:
       - '6379:6379'
   backend:
@@ -57,3 +59,4 @@ services:
       - backend
 volumes:
   postgres_data:
+  redis_data:

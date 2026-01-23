@@ -1,0 +1,37 @@
+mutation AddToCollection($input: AddToCollectionInput!) {
+  addToCollection(input: $input) {
+    id
+    status
+    media {
+      id
+      title
+    }
+  }
+}
+
+query GetCollectionEntry($tvdbId: String!) {
+  collectionEntry(tvdbId: $tvdbId) {
+    id
+    rating
+    status
+    addedAt
+  }
+}
+
+mutation RateMedia($tvdbId: String!, $rating: Int!) {
+  rateMedia(tvdbId: $tvdbId, rating: $rating) {
+    id
+    rating
+    status
+  }
+}
+
+mutation RemoveFromCollection($tvdbId: String!) {
+  removeFromCollection(tvdbId: $tvdbId) {
+    id
+    media {
+      id
+      title
+    }
+  }
+}

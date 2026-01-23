@@ -4,7 +4,6 @@ const config: KnipConfig = {
   ignoreBinaries: ["yamllint", "plantuml", "chktex"],
   workspaces: {
     backend: {
-      entry: ["src/main.ts", "test/**/*.ts"],
       project: ["src/**/*.ts"],
       ignoreDependencies: [
         "ts-loader",
@@ -14,7 +13,6 @@ const config: KnipConfig = {
       ],
     },
     frontend: {
-      entry: ["src/auth.ts"],
       project: ["src/**/*.tsx", "src/**/*.ts"],
       ignore: ["src/graphql/generated.ts"],
       ignoreDependencies: ["postcss", "tailwindcss", "tw-animate-css"],

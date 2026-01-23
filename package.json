@@ -9,11 +9,11 @@
     "@typescript-eslint/parser": "^8.53.1",
     "eslint": "^9.39.2",
     "eslint-plugin-deprecation": "^3.0.0",
-    "globals": "^17.0.0",
+    "globals": "^17.1.0",
     "husky": "^9.1.7",
     "knip": "^5.82.1",
     "lint-staged": "^16.2.7",
-    "prettier": "^3.8.0",
+    "prettier": "^3.8.1",
     "prettier-plugin-latex": "^2.0.1",
     "prettier-plugin-organize-attributes": "^1.0.0",
     "typescript-eslint": "^8.53.1"

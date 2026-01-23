@@ -2,8 +2,29 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AddCommentInput {
+  containsSpoiler: Boolean! = false
+  content: String!
+  tvdbId: String!
+  type: MediaType!
+}
+
+input AddToCollectionInput {
+  status: WatchStatus!
+  tvdbId: String!
+  type: MediaType!
+}
+
 type AuthPayload {
   accessToken: String!
+  user: User!
+}
+
+type Comment {
+  containsSpoiler: Boolean!
+  content: String!
+  id: Int!
+  postedAt: DateTime!
   user: User!
 }
 
@@ -23,15 +44,49 @@ input LoginInput {
   password: String!
 }
 
+type Media {
+  createdAt: DateTime!
+  id: Int!
+  originalTitle: String
+  posterPath: String
+  releaseDate: DateTime
+  status: String
+  syncStatus: SyncStatus!
+  synopsis: String
+  title: String!
+  tvdbId: String!
+  type: MediaType!
+}
+
+enum MediaType {
+  MOVIE
+  SERIES
+}
+
 type Mutation {
+  addComment(input: AddCommentInput!): Comment!
+  addToCollection(input: AddToCollectionInput!): UserMedia!
   createUser(createUserInput: CreateUserInput!): User!
   login(loginInput: LoginInput!): AuthPayload!
+  rateMedia(rating: Int!, tvdbId: String!): UserMedia!
+  removeComment(commentId: Int!): Comment!
+  removeFromCollection(tvdbId: String!): UserMedia!
   removeUser(id: ID!): User!
+  updateComment(
+    commentId: Int!
+    containsSpoiler: Boolean!
+    content: String!
+  ): Comment!
   updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
 type Query {
+  collectionEntry(tvdbId: String!): UserMedia
   me: User!
+  mediaComments(tvdbId: String!): [Comment!]!
+  mediaDetails(tvdbId: String!, type: MediaType!): TvdbMediaDetails!
+  popularMovies: [TvdbSearchResult!]!
+  popularSeries: [TvdbSearchResult!]!
   searchMedia(query: String!): [TvdbSearchResult!]!
   user(id: ID!): User
   users: [User!]!
@@ -40,6 +95,32 @@ type Query {
 enum Role {
   ADMIN
   USER
+}
+
+enum SyncStatus {
+  ERROR
+  PROCESSING
+  READY
+}
+
+type TvdbGenre {
+  id: Float!
+  name: String!
+}
+
+type TvdbMediaDetails {
+  banner_url: String
+  genres: [TvdbGenre!]
+  image_url: String
+  name: String!
+  original_name: String
+  overview: String
+  release_date: DateTime
+  runtime: Int
+  status: String
+  tvdb_id: String!
+  type: MediaType!
+  year: String
 }
 
 type TvdbSearchResult {
@@ -66,4 +147,20 @@ type User {
   role: Role!
   updatedAt: DateTime!
   username: String!
+}
+
+type UserMedia {
+  addedAt: DateTime!
+  id: ID!
+  media: Media!
+  rating: Int
+  status: WatchStatus!
+}
+
+enum WatchStatus {
+  COMPLETED
+  DROPPED
+  ON_HOLD
+  PLAN_TO_WATCH
+  WATCHING
 }

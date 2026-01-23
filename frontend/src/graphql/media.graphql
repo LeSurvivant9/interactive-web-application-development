@@ -1,0 +1,17 @@
+query GetMediaDetails($tvdbId: String!, $type: MediaType!) {
+  mediaDetails(tvdbId: $tvdbId, type: $type) {
+    tvdb_id
+    name
+    original_name
+    overview
+    image_url
+    banner_url
+    year
+    release_date
+    status
+    runtime
+    genres {
+      name
+    }
+  }
+}

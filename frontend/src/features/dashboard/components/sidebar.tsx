@@ -12,7 +12,7 @@ const routes = [
     color: "text-sky-500",
   },
   {
-    label: "Mon Profil",
+    label: "Profil",
     icon: User,
     href: "/profile",
     color: "text-violet-500",

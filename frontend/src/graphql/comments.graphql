@@ -1,0 +1,46 @@
+query GetMediaComments($tvdbId: String!) {
+  mediaComments(tvdbId: $tvdbId) {
+    id
+    content
+    containsSpoiler
+    postedAt
+    user {
+      id
+      username
+      avatarUrl
+    }
+  }
+}
+
+mutation AddComment($input: AddCommentInput!) {
+  addComment(input: $input) {
+    id
+    content
+    postedAt
+    user {
+      username
+    }
+  }
+}
+
+mutation UpdateComment(
+  $commentId: Int!
+  $content: String!
+  $containsSpoiler: Boolean!
+) {
+  updateComment(
+    commentId: $commentId
+    content: $content
+    containsSpoiler: $containsSpoiler
+  ) {
+    id
+    content
+    containsSpoiler
+  }
+}
+
+mutation RemoveComment($commentId: Int!) {
+  removeComment(commentId: $commentId) {
+    id
+  }
+}
