@@ -79,10 +79,14 @@ export default function RegisterForm() {
     } catch (err) {
       let errorMessage = "Une erreur est survenue lors de l'inscription";
 
-      if (err.graphQLErrors && err.graphQLErrors.length > 0) {
-        errorMessage = err.graphQLErrors[0].message;
-      } else if (err.message) {
-        errorMessage = err.message;
+      const apolloError = err as {
+        graphQLErrors?: Array<{ message: string }>;
+        message?: string;
+      };
+      if (apolloError.graphQLErrors && apolloError.graphQLErrors.length > 0) {
+        errorMessage = apolloError.graphQLErrors[0].message;
+      } else if (apolloError.message) {
+        errorMessage = apolloError.message;
       }
 
       logger.error(

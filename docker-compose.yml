@@ -16,13 +16,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  redis:
-    image: redis:8-alpine
-    container_name: mediatracker_redis
-    volumes:
-      - redis_data:/data
-    ports:
-      - '6379:6379'
   backend:
     build:
       context: .
@@ -32,15 +25,12 @@ services:
       - '3000:3000'
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@mediatracker_db:5432/${POSTGRES_DB}
-      REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET}
       TVDB_API_KEY: ${TVDB_API_KEY}
       FRONTEND_URL: ${FRONTEND_URL}
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
     command: >
       sh -c "bunx prisma migrate deploy --schema=./prisma/schema.prisma && bun run server.js"
   frontend:
@@ -59,4 +49,3 @@ services:
       - backend
 volumes:
   postgres_data:
-  redis_data:

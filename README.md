@@ -46,7 +46,7 @@ Une fois lancé :
 1. **Lancer les services d'infrastructure** (DB & Redis) :
 
    ```bash
-   docker compose up postgres redis -d
+   docker compose up postgres -d
    ```
 
 2. **Installer les dépendances** :
