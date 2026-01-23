@@ -13,7 +13,6 @@ FROM oven/bun:1-alpine AS prod_deps
 WORKDIR /app
 COPY backend/package.json ./backend/
 COPY backend/prisma ./backend/prisma
-# On installe les dépendances en ignorant le workspace racine pour forcer une installation locale
 RUN cd backend && bun install --production --ignore-scripts --backend=copy
 
 FROM build_deps AS builder
@@ -44,14 +43,11 @@ FROM oven/bun:1-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV production
 
-# Copie directe des modules natifs/prod pré-installés
 COPY --from=prod_deps /app/backend/node_modules ./node_modules
 COPY --from=builder /app/backend/server.js ./server.js
 COPY --from=builder /app/backend/prisma ./prisma
 
-# Création d'un fichier de configuration minimal pour Prisma en production
-# Cela est nécessaire pour que 'prisma migrate deploy' puisse lire la DATABASE_URL
-RUN echo "module.exports = { schema: 'prisma/schema.prisma', datasource: { url: process.env.DATABASE_URL } };" > prisma.config.js
+COPY backend/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3000
 

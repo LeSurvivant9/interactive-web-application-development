@@ -47,7 +47,7 @@ async function main() {
 
   const arcane = await prisma.media.create({
     data: {
-      tvdbId: "385687",
+      tvdbId: "371028",
       title: "Arcane",
       originalTitle: "Arcane",
       synopsis:
@@ -63,7 +63,7 @@ async function main() {
 
   const inception = await prisma.media.create({
     data: {
-      tvdbId: "166", // ID fictif pour l'exemple
+      tvdbId: "113",
       title: "Inception",
       originalTitle: "Inception",
       synopsis: "Dom Cobb est un voleur expérimenté...",
@@ -81,7 +81,7 @@ async function main() {
       userId: admin.id,
       mediaId: arcane.id,
       status: WatchStatus.COMPLETED,
-      rating: 10,
+      rating: 5,
     },
   });
 

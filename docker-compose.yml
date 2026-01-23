@@ -32,7 +32,7 @@ services:
       postgres:
         condition: service_healthy
     command: >
-      sh -c "bunx prisma migrate deploy --schema=./prisma/schema.prisma && bun run server.js"
+      sh -c "bunx prisma migrate deploy --schema=./prisma/schema.prisma && bun prisma db seed && bun run server.js"
   frontend:
     build:
       context: .
@@ -45,6 +45,7 @@ services:
       INTERNAL_API_URL: http://backend:3000/graphql
       AUTH_TRUST_HOST: "true"
       AUTH_SECRET: ${JWT_SECRET}
+      AUTH_URL: http://localhost:3001
     depends_on:
       - backend
 volumes:
