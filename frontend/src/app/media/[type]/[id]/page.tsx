@@ -4,9 +4,9 @@ import { useQuery } from "@apollo/client/react";
 import { Calendar, Clock, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { notFound, useParams } from "next/navigation";
-import { AddToCollectionButton } from "@/components/media/add-to-collection-button";
-import { CommentsSection } from "@/components/media/comments-section";
-import { UserRating } from "@/components/media/user-rating";
+import { AddToCollectionButton } from "@/features/media/components/add-to-collection-button";
+import { CommentsSection } from "@/features/media/components/comments-section";
+import { UserRating } from "@/features/media/components/user-rating";
 import {
   GetMediaDetailsDocument,
   IGetMediaDetailsQuery,

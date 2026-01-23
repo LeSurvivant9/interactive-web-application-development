@@ -21,6 +21,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "postinstall": "bunx --bun prisma generate"
   },
+  "prisma": {
+    "seed": "bun run prisma/seed.ts"
+  },
   "dependencies": {
     "@apollo/server": "^5.3.0",
     "@as-integrations/express5": "^1.1.2",

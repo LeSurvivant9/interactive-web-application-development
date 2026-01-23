@@ -1,7 +1,7 @@
 import { LayoutDashboard, Settings, User } from "lucide-react";
 import Link from "next/link";
-import { GlobalSearch } from "@/components/global-search";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { GlobalSearch } from "@/features/search/components/global-search";
 import { cn } from "@/lib/utils";
 
 const routes = [

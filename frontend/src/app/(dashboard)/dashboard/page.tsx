@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery } from "@apollo/client/react";
-import { MediaCarousel } from "@/components/dashboard/media-carousel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MediaCarousel } from "@/features/dashboard/components/media-carousel";
 import { GetDashboardDataDocument, MeDocument } from "@/graphql/generated";
 
 export default function DashboardPage() {
@@ -51,14 +51,14 @@ export default function DashboardPage() {
       <div className="container py-8 space-y-10">
         <section>
           <MediaCarousel
-            title="🔥 Séries populaires"
+            title="Séries populaires"
             items={mediaData?.popularSeries || []}
           />
         </section>
 
         <section>
           <MediaCarousel
-            title="🍿 Films du moment"
+            title="Films du moment"
             items={mediaData?.popularMovies || []}
           />
         </section>
